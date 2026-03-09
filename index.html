@@ -389,14 +389,15 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 </div>
 
 <div class="ov" id="ov-call">
-  <div class="sheet">
+  <div class="sheet" style="max-height:96vh;">
     <div class="shdl"></div>
     <div class="shhd">
       <button class="nb" onclick="clov('ov-call')">Cancel</button>
-      <div class="shti" id="call-ti">Log Call</div>
+      <div class="shti" id="call-ti">Call Result</div>
       <button class="nb b" onclick="saveCall()">Save</button>
     </div>
     <div class="shbd">
+      <!-- ── CALL OUTCOME ── -->
       <div style="padding:14px 16px 0;font-size:13px;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;font-weight:500;">Call Outcome</div>
       <div class="cgrid">
         <button class="cbtn gn sel" onclick="pickCS('picked',this)"><span class="ico">✅</span>Picked</button>
@@ -408,20 +409,39 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
         <button class="cbtn gr" onclick="pickCS('switched_off',this)"><span class="ico">📴</span>Off</button>
         <button class="cbtn gr" onclick="pickCS('voicemail',this)"><span class="ico">📬</span>Voicemail</button>
       </div>
+
+      <!-- ── CALL DETAILS ── -->
       <div class="fsec"><div class="fgrp">
         <div class="fr"><span class="flab">Duration</span><input type="text" id="cs-dur" placeholder="e.g. 3 min"></div>
+        <div class="fr" style="align-items:flex-start;padding-top:10px;"><span class="flab" style="padding-top:4px;">Notes</span><textarea id="cs-note" placeholder="What was discussed?" style="min-height:56px;text-align:left;"></textarea></div>
       </div></div>
-      <div class="fsec" style="margin-top:12px;"><div class="flbl">Schedule Follow-up (optional)</div>
-        <div class="fgrp">
-          <div class="fr"><span class="flab">Date *</span><input type="date" id="cs-fu-date" style="text-align:right;" oninput="el('cs-fu-warn').style.display='none'"></div>
-          <div class="fr"><span class="flab">Time</span><input type="time" id="cs-fu-time" style="text-align:right;"></div>
-          <div id="cs-fu-warn" style="display:none;align-items:center;gap:8px;padding:10px 16px;background:var(--rl);color:var(--red);font-size:13px;font-weight:600;">⚠️ Please set a follow-up date before saving</div>
-        </div>
+
+      <!-- ── NEXT ACTION (inline in call sheet) ── -->
+      <div style="margin:16px 16px 0;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:13px;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;font-weight:500;">Next Action</div>
+        <div style="font-size:12px;color:var(--l3);">Optional</div>
       </div>
-      <div class="fsec" style="margin-top:14px;"><div class="fgrp">
-        <div class="fr"><textarea id="cs-note" placeholder="What was discussed?"></textarea></div>
+      <!-- Action type chips — 2 col grid, compact -->
+      <div class="at-grid" id="call-at-grid" style="padding:10px 16px 0;">
+        <button class="at-chip sel" onclick="pickCallAT('Call',this)">📞 Call</button>
+        <button class="at-chip" onclick="pickCallAT('Collect Documents',this)">📄 Collect Docs</button>
+        <button class="at-chip" onclick="pickCallAT('Send Details',this)">📤 Send Details</button>
+        <button class="at-chip" onclick="pickCallAT('Bank Follow-up',this)">🏦 Bank Follow-up</button>
+        <button class="at-chip" onclick="pickCallAT('Meeting',this)">🤝 Meeting</button>
+        <button class="at-chip" onclick="pickCallAT('Waiting for Customer',this)">⏳ Waiting</button>
+        <button class="at-chip" onclick="pickCallAT('Custom',this)">✏️ Custom</button>
+      </div>
+
+      <div class="fsec" style="margin-top:10px;"><div class="fgrp">
+        <div class="fr" style="align-items:flex-start;padding-top:10px;"><span class="flab" style="padding-top:4px;">Action Note</span><textarea id="cs-na-note" placeholder="e.g. Call after salary credit" style="min-height:50px;text-align:left;"></textarea></div>
       </div></div>
-      <div style="height:24px"></div>
+
+      <div class="fsec" style="margin-top:10px;"><div class="fgrp">
+        <div class="fr"><span class="flab">Date</span><input type="date" id="cs-fu-date" style="text-align:right;"></div>
+        <div class="fr"><span class="flab">Time</span><input type="time" id="cs-fu-time" style="text-align:right;"></div>
+      </div></div>
+
+      <div style="height:32px"></div>
     </div>
   </div>
 </div>
@@ -670,11 +690,36 @@ function loadLeads(){
       leads.forEach(function(l){
         if(typeof l.docs==='string'){try{l.docs=JSON.parse(l.docs);}catch(e){l.docs={};}}
         if(typeof l.act==='string'){try{l.act=JSON.parse(l.act);}catch(e){l.act=[];}}
-        // ─── NEXT ACTION backward-compat ─────────────────────────
-        // If a lead has nextfu but no nextActionDateTime, migrate it
-        if(l.nextfu && !l.nextActionDateTime){
-          l.nextActionDateTime = l.nextfu;
-          if(!l.nextActionType) l.nextActionType = 'Call';
+
+        // ── RESTORE NEXT ACTION ───────────────────────────────────
+        // Priority 1: real sheet columns (nextActionType/Note/DateTime)
+        //   — populated once the new columns are added to the sheet
+        // Priority 2: __na__ sentinel inside act[]
+        //   — for leads saved by v4 before this update
+        // Priority 3: legacy nextfu field
+        //   — for leads saved before v2
+
+        if(l.nextActionDateTime){
+          // Real columns present — just keep them as-is.
+          // Also sync legacy nextfu so the follow-up date bar still works.
+          l.nextfu = l.nextActionDateTime;
+        } else {
+          // Try extracting from __na__ sentinel (v4 backward-compat)
+          var naEntry = null;
+          l.act = (l.act||[]).filter(function(a){
+            if(a.t === '__na__'){ naEntry = a; return false; }
+            return true;
+          });
+          if(naEntry && naEntry.dt){
+            l.nextActionType     = naEntry.ty || 'Call';
+            l.nextActionNote     = naEntry.no || '';
+            l.nextActionDateTime = naEntry.dt;
+            l.nextfu             = naEntry.dt;
+          } else if(l.nextfu){
+            // Very old leads: only nextfu, no nextAction fields
+            l.nextActionDateTime = l.nextfu;
+            if(!l.nextActionType) l.nextActionType = 'Call';
+          }
         }
       });
       lastSync=new Date();
@@ -711,7 +756,16 @@ function flushLeads(){
   leads.forEach(function(l){
     var own=String(l.owner||me.id);
     if(!byOwner[own])byOwner[own]=[];
-    byOwner[own].push(Object.assign({},l,{docs:JSON.stringify(l.docs||{}),act:JSON.stringify(l.act||[])}));
+
+    // Strip any __na__ sentinels from old v4 data before saving.
+    // The new real columns (nextActionType/Note/DateTime) now carry
+    // this data properly, so the sentinel is no longer needed.
+    var actClean = (l.act||[]).filter(function(a){ return a.t !== '__na__'; });
+
+    byOwner[own].push(Object.assign({},l,{
+      docs: JSON.stringify(l.docs||{}),
+      act:  JSON.stringify(actClean)
+    }));
   });
   var owners=Object.keys(byOwner);
   if(owners.length===0){setSbar('ok','Nothing to save');return;}
@@ -758,6 +812,20 @@ function setSbar(type,msg){
 // ─── NEXT ACTION HELPERS ───────────────────────────────────────────
 
 /**
+ * Returns the display label+icon for a next action.
+ * KEY FIX: Custom type shows the note as the label, not "Custom".
+ */
+function naDisplayLabel(l){
+  var type = l.nextActionType || '';
+  var note = l.nextActionNote || '';
+  if(type === 'Custom'){
+    // Show the note as the primary label; icon is ✏️
+    return {ico:'✏️', label: note || 'Custom action'};
+  }
+  return {ico: AT_ICO[type]||'📋', label: type || 'Follow-up'};
+}
+
+/**
  * Returns status string for a lead's next action:
  * 'overdue' | 'today' | 'future' | 'none'
  */
@@ -793,52 +861,76 @@ function fmtNA(iso){
 }
 
 /**
- * Renders the Next Action banner card for the lead detail view.
+ * Renders the Next Action row for the lead detail view.
+ * Compact (~50px) when empty; fuller when set.
+ * Custom type shows the note as the action label (Bug fix #4).
  */
 function naDetailCard(l){
   var status = naStatus(l);
-  var ico = AT_ICO[l.nextActionType] || '📋';
-  var chev='<svg class="na-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+  var chev='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="flex-shrink:0;color:var(--l3)"><polyline points="9 18 15 12 9 6"/></svg>';
 
+  // ── EMPTY state: compact single-line row ──────────────────────────
   if(status === 'none'){
-    return '<div class="na-card na-empty" onclick="openFUOv()">'
-      +'<div class="na-inner">'
-      +'<div class="na-ico empty">📋</div>'
-      +'<div class="na-body">'
-      +'<div class="na-label empty">NEXT ACTION</div>'
-      +'<div class="na-type" style="color:var(--l3);">No next action set</div>'
-      +'<div class="na-time empty">Tap to set one</div>'
-      +'</div>'+chev+'</div></div>';
+    return '<div onclick="openFUOv()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;background:var(--fill2);border-radius:10px;">'
+      +'<div style="display:flex;align-items:center;gap:8px;">'
+      +'<span style="font-size:15px;color:var(--l3);">⚪</span>'
+      +'<span style="font-size:14px;color:var(--l3);">No next action set</span>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;gap:4px;color:var(--blue);font-size:13px;font-weight:600;">➕ Set'+chev+'</div>'
+      +'</div>';
   }
 
-  var labelMap={overdue:'🔴 OVERDUE', today:'TODAY', future:'NEXT ACTION'};
-  var label = labelMap[status] || 'NEXT ACTION';
+  // ── SET state ─────────────────────────────────────────────────────
+  var dl = naDisplayLabel(l);
+  var statusColors = {
+    overdue: {bg:'rgba(255,59,48,.09)',border:'rgba(255,59,48,.22)',label:'var(--red)',tag:'🔴 OVERDUE'},
+    today:   {bg:'rgba(0,122,255,.07)',border:'rgba(0,122,255,.18)',label:'var(--blue)',tag:'TODAY'},
+    future:  {bg:'rgba(52,199,89,.07)',border:'rgba(52,199,89,.18)',label:'var(--green)',tag:'UPCOMING'}
+  };
+  var sc = statusColors[status] || statusColors.future;
 
-  return '<div class="na-card na-'+status+'" onclick="openFUOv()">'
-    +'<div class="na-inner">'
-    +'<div class="na-ico '+status+'">'+ico+'</div>'
-    +'<div class="na-body">'
-    +'<div class="na-label '+status+'">'+label+'</div>'
-    +'<div class="na-type">'+(l.nextActionType||'Follow-up')+'</div>'
-    +(l.nextActionNote ? '<div class="na-note">'+l.nextActionNote+'</div>' : '')
-    +'<div class="na-time '+status+'">'+fmtNA(l.nextActionDateTime)+'</div>'
-    +'</div>'+chev+'</div></div>';
+  return '<div onclick="openFUOv()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:'+sc.bg+';border:1px solid '+sc.border+';border-radius:10px;">'
+    +'<span style="font-size:18px;flex-shrink:0;">'+dl.ico+'</span>'
+    +'<div style="flex:1;min-width:0;">'
+    +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:'+sc.label+';margin-bottom:1px;">'+sc.tag+'</div>'
+    +'<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+dl.label+'</div>'
+    +(l.nextActionType !== 'Custom' && l.nextActionNote ? '<div style="font-size:12px;color:var(--l2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+l.nextActionNote+'</div>' : '')
+    +'</div>'
+    +'<div style="font-size:12px;font-weight:500;color:'+sc.label+';flex-shrink:0;text-align:right;">'+fmtNA(l.nextActionDateTime)+'</div>'
+    +chev+'</div>';
 }
 
 /**
  * Renders the mini next action row on a lead card.
+ * Always shown. Custom type shows note, not "Custom". (Bug fix #4)
+ * Empty state shows neutral "⚪ No next action". (Feature #6)
  */
 function naMini(l){
   var status = naStatus(l);
-  if(status === 'none') return '';
-  var ico = AT_ICO[l.nextActionType] || '📋';
-  var label = (l.nextActionType||'Follow-up')
-    + (l.nextActionNote ? ' — '+l.nextActionNote.slice(0,30) : '')
-    + ' · ' + fmtNA(l.nextActionDateTime);
-  return '<div class="na-mini '+status+'">'
-    +'<span style="font-size:13px;flex-shrink:0;">'+ico+'</span>'
-    +'<span>'+label+'</span>'
-    +(status==='overdue'?'<span style="font-size:11px;font-weight:700;color:var(--red);flex-shrink:0;margin-left:auto;">OVERDUE</span>':'')
+
+  // ── Empty: neutral grey row ───────────────────────────────────────
+  if(status === 'none'){
+    return '<div style="display:flex;align-items:center;gap:5px;margin-top:5px;">'
+      +'<span style="font-size:12px;color:var(--l3);">⚪</span>'
+      +'<span style="font-size:12px;color:var(--l3);">No next action</span>'
+      +'</div>';
+  }
+
+  // ── Set: show icon + label + time ─────────────────────────────────
+  var dl = naDisplayLabel(l);
+  var timeStr = fmtNA(l.nextActionDateTime);
+  var noteStr = (l.nextActionType !== 'Custom' && l.nextActionNote) ? ' — '+l.nextActionNote.slice(0,28) : '';
+  var label = dl.label + noteStr + (timeStr ? ' · '+timeStr : '');
+
+  var colorMap = {overdue:'var(--red)', today:'var(--blue)', future:'var(--l2)'};
+  var bgMap    = {overdue:'rgba(255,59,48,.07)', today:'rgba(0,122,255,.06)', future:'rgba(0,0,0,.03)'};
+  var col = colorMap[status] || 'var(--l2)';
+  var bg  = bgMap[status]    || 'rgba(0,0,0,.03)';
+
+  return '<div style="display:flex;align-items:center;gap:5px;margin-top:5px;padding:4px 8px;background:'+bg+';border-radius:7px;">'
+    +'<span style="font-size:13px;flex-shrink:0;">'+dl.ico+'</span>'
+    +'<span style="font-size:12px;font-weight:500;color:'+col+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;">'+label+'</span>'
+    +(status==='overdue'?'<span style="font-size:10px;font-weight:700;color:var(--red);flex-shrink:0;margin-left:auto;letter-spacing:.3px;">OVERDUE</span>':'')
     +'</div>';
 }
 
@@ -911,11 +1003,41 @@ function lcard(l){
   '</div>';
 }
 
+// ─── CALL WORKFLOW ─────────────────────────────────────────────────
+// When user taps Call Now:
+//   1. Log "call placed" activity immediately
+//   2. Phone dialer opens (handled by <a href="tel:...">)
+//   3. When user returns to the app (visibilitychange / pageshow),
+//      automatically open the Call Result sheet
+// pendingCallId is set before dialing and cleared after result saved.
+var pendingCallId = null;
+
 function logCallTap(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
-  var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'call',tx:'📞 Call placed',ts:n});l.updated=n;save();
-  setTimeout(function(){openCallOv(id);},1000);
+  var n=new Date().toISOString();
+  l.act=l.act||[];l.act.push({t:'call',tx:'📞 Call placed',ts:n});
+  l.updated=n;save();
+  // Store id so we open the result sheet on return
+  pendingCallId = id;
 }
+
+// Listen for app returning to foreground after the phone call
+document.addEventListener('visibilitychange', function(){
+  if(document.visibilityState === 'visible' && pendingCallId){
+    var id = pendingCallId;
+    pendingCallId = null;
+    // Small delay so the page is fully painted first
+    setTimeout(function(){ openCallOv(id); }, 400);
+  }
+});
+// Also covers some browsers that fire pageshow instead
+window.addEventListener('pageshow', function(){
+  if(pendingCallId){
+    var id = pendingCallId;
+    pendingCallId = null;
+    setTimeout(function(){ openCallOv(id); }, 400);
+  }
+});
 function logWA(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'wa',tx:'💬 WhatsApp opened',ts:n});l.updated=n;save();
@@ -1080,9 +1202,8 @@ function renderDet(l){
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a>'+
     '</div>'+
 
-    // ── Quick actions strip ────────────────────────────────────────
+    // ── Quick actions strip (Log Call removed — call from Call Now button only) ──
     '<div class="qastrip">'+
-      '<button class="qab" onclick="openCallOv(\''+l.id+'\')"><div class="qaico" style="background:var(--gl);">📋</div><span class="qalbl">Log Call</span></button>'+
       '<button class="qab" onclick="openNoteOv()"><div class="qaico" style="background:var(--bl);">📝</div><span class="qalbl">Note</span></button>'+
       '<button class="qab" onclick="openStageOv()"><div class="qaico" style="background:var(--ol);">📍</div><span class="qalbl">Stage</span></button>'+
       '<button class="qab" onclick="openFUOv()"><div class="qaico" style="background:var(--pl);">📅</div><span class="qalbl">Next Action</span></button>'+
@@ -1143,38 +1264,99 @@ function mvStage(s){
   var n=new Date().toISOString();l.stage=s;l.updated=n;l.act=l.act||[];l.act.push({t:'stage',tx:'Stage → '+SL[s],ts:n});
   save();clov('ov-stage');renderDet(l);renderAll();toast('Moved to '+SL[s]);
 }
+// State for call-sheet next action type
+var csNaType = 'Call';
+
 function openCallOv(id){
   activeId=id;var l=leads.find(function(x){return x.id===id;});if(!l)return;
-  el('call-ti').textContent=l.name;el('cs-dur').value='';el('cs-note').value='';
-  el('cs-fu-date').value='';el('cs-fu-time').value='';
-  el('cs-fu-warn').style.display='none';
-  cs='picked';document.querySelectorAll('.cbtn').forEach(function(b){b.classList.remove('sel');});
-  document.querySelector('.cbtn.gn').classList.add('sel');el('ov-call').classList.add('on');
+  el('call-ti').textContent=l.name;
+  el('cs-dur').value='';
+  el('cs-note').value='';
+  el('cs-na-note').value = l.nextActionNote || '';
+
+  // Reset outcome to Picked
+  cs='picked';
+  document.querySelectorAll('.cbtn').forEach(function(b){b.classList.remove('sel');});
+  document.querySelector('.cbtn.gn').classList.add('sel');
+
+  // Pre-fill Next Action type from existing lead, default to Call
+  csNaType = l.nextActionType || 'Call';
+  document.querySelectorAll('#call-at-grid .at-chip').forEach(function(b){
+    b.classList.remove('sel');
+    if(b.textContent.indexOf(csNaType) > -1) b.classList.add('sel');
+  });
+  // If saved type is Custom but not in chips list, default chip to Call
+  if(csNaType === 'Custom'){
+    document.querySelectorAll('#call-at-grid .at-chip').forEach(function(b){
+      if(b.textContent.indexOf('Custom') > -1) b.classList.add('sel');
+    });
+  }
+
+  // Pre-fill date/time from existing next action or default to tomorrow 9AM
+  var existingDT = l.nextActionDateTime || l.nextfu;
+  if(existingDT && new Date(existingDT) > new Date()){
+    el('cs-fu-date').value = existingDT.slice(0,10);
+    el('cs-fu-time').value = existingDT.slice(11,16) || '09:00';
+  } else {
+    var tom = new Date(); tom.setDate(tom.getDate()+1);
+    el('cs-fu-date').value = tom.getFullYear()+'-'+pad2(tom.getMonth()+1)+'-'+pad2(tom.getDate());
+    el('cs-fu-time').value = '09:00';
+  }
+
+  el('ov-call').classList.add('on');
+}
+
+function pickCallAT(type, btn){
+  csNaType = type;
+  document.querySelectorAll('#call-at-grid .at-chip').forEach(function(b){b.classList.remove('sel');});
+  btn.classList.add('sel');
 }
 function pickCS(s,e){cs=s;document.querySelectorAll('.cbtn').forEach(function(b){b.classList.remove('sel');});e.classList.add('sel');}
+
 function saveCall(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
-  var n=new Date().toISOString(),note=el('cs-note').value.trim(),dur=el('cs-dur').value.trim();
-  var fuDate=el('cs-fu-date').value,fuTime=el('cs-fu-time').value||'09:00';
-  if(!fuDate){el('cs-fu-warn').style.display='flex';el('cs-fu-date').focus();return;}
-  el('cs-fu-warn').style.display='none';
-  var fuISO=fuDate+'T'+fuTime+':00';
+  var n=new Date().toISOString();
+  var note   = el('cs-note').value.trim();
+  var dur    = el('cs-dur').value.trim();
+  var fuDate = el('cs-fu-date').value;
+  var fuTime = el('cs-fu-time').value||'09:00';
+  var fuISO  = fuDate ? fuDate+'T'+fuTime+':00' : '';
+
+  // Build and persist call record
   var c={id:uid(),lid:activeId,status:cs,note:note,dur:dur,fu:fuISO,ts:n,by:me?me.name:'',owner:me?me.id:''};
-  calls.push(c);saveSingleCall(c);
-  // Update lead's nextfu (legacy) AND nextActionDateTime
-  var lfu=leads.find(function(x){return x.id===activeId;});
-  if(lfu){
-    lfu.nextfu=fuISO;
-    // Also set nextAction fields if not already set by overlay
-    if(!lfu.nextActionDateTime){
-      lfu.nextActionDateTime=fuISO;
-      lfu.nextActionType='Call';
-    }
+  calls.push(c);
+  saveSingleCall(c);
+
+  // Activity log
+  var slbl={picked:'📞 Call picked',rejected:'❌ Rejected',missed:'📵 Missed',busy:'🔄 Busy',
+    wrong:'⚠️ Wrong number',callback:'📅 Callback',switched_off:'📴 Off',voicemail:'📬 Voicemail'};
+  l.act=l.act||[];
+  l.act.push({t:'call',tx:(slbl[cs]||'Call')+(note?' — '+note.slice(0,50):''),ts:n});
+
+  // Stage auto-advance
+  if(cs==='picked') l.stage='contacted';
+  l.updated=n;
+
+  // Save Next Action from inline call-sheet fields
+  // FIX #4: csNaType is preserved exactly — never overwritten with a default
+  var naNote = el('cs-na-note').value.trim();
+  if(fuISO){
+    l.nextActionType     = csNaType;
+    l.nextActionNote     = naNote;
+    l.nextActionDateTime = fuISO;
+    l.nextfu             = fuISO;
+    var naIco = (csNaType==='Custom') ? '✏️' : (AT_ICO[csNaType]||'📅');
+    l.act.push({t:'fu', tx: naIco+' Next: '+
+      (csNaType==='Custom' ? (naNote||'Custom action') : csNaType)+
+      (csNaType!=='Custom'&&naNote?' — '+naNote.slice(0,30):'')+
+      ' · '+fmtNA(fuISO), ts:n});
   }
-  var slbl={picked:'📞 Call picked',rejected:'❌ Rejected',missed:'📵 Missed',busy:'🔄 Busy',wrong:'⚠️ Wrong number',callback:'📅 Callback',switched_off:'📴 Off',voicemail:'📬 Voicemail'};
-  l.act=l.act||[];l.act.push({t:'call',tx:(slbl[cs]||'Call')+(note?' — '+note.slice(0,50):''),ts:n});
-  if(cs==='picked')l.stage='contacted';l.updated=n;
-  save();clov('ov-call');if(el('ov-det').classList.contains('on'))renderDet(l);renderAll();toast('Call logged!');
+
+  save();
+  clov('ov-call');
+  if(el('ov-det').classList.contains('on')) renderDet(l);
+  renderAll();
+  toast('Call logged!');
 }
 function openNoteOv(){el('note-txt').value='';el('ov-note').classList.add('on');setTimeout(function(){el('note-txt').focus();},350);}
 function saveNote(){
@@ -1353,14 +1535,17 @@ function pickAT(type, btn){
 function openFUOv(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
 
-  // Pre-fill action type
+  // Pre-fill action type — default to 'Call' if none set
   naType = l.nextActionType || 'Call';
-  document.querySelectorAll('.at-chip').forEach(function(b){
+  document.querySelectorAll('#at-grid .at-chip').forEach(function(b){
     b.classList.remove('sel');
-    // Match by stripping the emoji prefix
-    var chipText = b.textContent.replace(/^[\u{1F000}-\u{1FFFF}]|^[\u2600-\u27BF]|\s/gu,'').trim();
-    var clean = naType.replace(/^[\u{1F000}-\u{1FFFF}]|^[\u2600-\u27BF]/u,'').trim();
-    if(b.textContent.indexOf(naType) > -1) b.classList.add('sel');
+    // Simple exact text match including the emoji prefix
+    // For Custom: match the chip that contains 'Custom'
+    if(naType === 'Custom'){
+      if(b.textContent.indexOf('Custom') > -1) b.classList.add('sel');
+    } else {
+      if(b.textContent.indexOf(naType) > -1) b.classList.add('sel');
+    }
   });
 
   // Pre-fill note
@@ -1387,17 +1572,18 @@ function saveFU(){
   var note = el('na-note-inp').value.trim();
   var n = new Date().toISOString();
 
-  // Save all three new fields
+  // FIX #4: save naType exactly — Custom stays 'Custom', note is the label
   l.nextActionType     = naType || 'Call';
   l.nextActionNote     = note;
   l.nextActionDateTime = iso;
-
-  // Keep legacy nextfu in sync so existing follow-up tab still works
-  l.nextfu = iso;
+  l.nextfu             = iso;  // keep legacy in sync
 
   l.act = l.act||[];
-  var ico = AT_ICO[l.nextActionType]||'📅';
-  l.act.push({t:'fu', tx: ico+' Next Action: '+l.nextActionType+(note?' — '+note.slice(0,40):'')+' · '+fmtNA(iso), ts:n});
+  var ico = (l.nextActionType==='Custom') ? '✏️' : (AT_ICO[l.nextActionType]||'📅');
+  l.act.push({t:'fu', tx: ico+' Next Action: '+
+    (l.nextActionType==='Custom' ? (note||'Custom action') : l.nextActionType)+
+    (l.nextActionType!=='Custom'&&note?' — '+note.slice(0,40):'')+
+    ' · '+fmtNA(iso), ts:n});
   l.updated = n;
 
   save();
