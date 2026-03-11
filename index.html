@@ -68,7 +68,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .tab.on .tl2{color:var(--blue)}.tab.on .ti svg{color:var(--blue)}
 .fab{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 80px);right:20px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,122,255,.38);border:none;cursor:pointer;z-index:50;transition:transform .1s}
 .fab:active{transform:scale(.9)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:200;display:none;align-items:flex-end}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:400;display:none;align-items:flex-end}
 .ov.on{display:flex;animation:ovIn .2s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
 .sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:94vh;display:flex;flex-direction:column;animation:shUp .3s cubic-bezier(.32,.72,0,1)}
@@ -1156,6 +1156,23 @@ function renderPipelineGrid(){
 // ═══════════════════════════════════════════════════════
 var wmQueue   = [];   // ordered lead list for the session
 var wmIndex   = 0;    // current position
+var wmActionTaken = false; // true once user calls/notes/sets action on current lead
+
+// Call this whenever the user does something meaningful on the current work-mode lead.
+// It reveals the "Next Lead" button.
+function wmMarkDone(){
+  wmActionTaken = true;
+  var nxt = el('wm-next');
+  if(nxt) nxt.style.display = 'flex';
+  var total = wmQueue.length;
+  var isLast = (wmIndex === total - 1);
+  var nextBtn = el('wm-next-btn');
+  if(nextBtn){
+    nextBtn.innerHTML = isLast
+      ? 'Finish ✓'
+      : 'Next Lead <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+  }
+}
 
 function startWork(){
   wmQueue = workLeads();
@@ -1193,6 +1210,7 @@ function openWorkScreen(){
 
 function renderWorkLead(){
   var total = wmQueue.length;
+  wmActionTaken = false;  // reset — Next button hidden until user does something
 
   // Progress bar
   var pct = total > 0 ? Math.round((wmIndex / total) * 100) : 0;
@@ -1225,15 +1243,9 @@ function renderWorkLead(){
   // Render the detail view into wm-body
   el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
 
-  // Next button label
-  var nextBtn = el('wm-next-btn');
-  var isLast = (wmIndex === total - 1);
-  if(nextBtn){
-    nextBtn.innerHTML = isLast
-      ? 'Finish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
-      : 'Next Lead <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
-  }
-  el('wm-next').style.display = 'flex';
+  // Next button: hidden until user takes an action (call / note / next-action)
+  // wmMarkDone() will reveal it once something is saved.
+  el('wm-next').style.display = 'none';
 
   // Scroll back to top
   var body = el('wm-body');
@@ -1662,11 +1674,14 @@ function saveCall(){
 
   save();
   clov('ov-call');
-  if(el('ov-det').classList.contains('on')) renderDet(l);
-  // If work mode is active, refresh current lead and advance automatically
+  // If work mode active: refresh the current lead view and reveal the Next button.
+  // (User can then tap "Next Lead" when ready — we don't auto-skip.)
   if(el('wm-screen').classList.contains('on')){
-    workNext();
+    var updL = leads.find(function(x){ return x.id===activeId; });
+    if(updL) el('wm-body').innerHTML = buildDetHTML(updL) + '<div style="height:16px"></div>';
+    wmMarkDone();
   }
+  if(el('ov-det').classList.contains('on')) renderDet(leads.find(function(x){return x.id===activeId;})||{});
   renderAll();
   toast('Call logged!');
 }
@@ -1675,7 +1690,14 @@ function saveNote(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
   var txt=el('note-txt').value.trim();if(!txt){clov('ov-note');return;}
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'note',tx:txt,ts:n});l.updated=n;
-  save();clov('ov-note');renderDet(l);toast('Note added');
+  save();
+  clov('ov-note');
+  if(el('wm-screen').classList.contains('on')){
+    el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
+    wmMarkDone();
+  }
+  if(el('ov-det').classList.contains('on')) renderDet(l);
+  toast('Note added');
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1841,7 +1863,7 @@ function pickFUDate(ds){fuDateSel=ds;buildFUBar();renderHome();}
 // ═══════════════════════════════════════════════════════
 function pickAT(type, btn){
   naType = type;
-  document.querySelectorAll('.at-chip').forEach(function(b){b.classList.remove('sel');});
+  document.querySelectorAll('#at-grid .at-chip').forEach(function(b){b.classList.remove('sel');});
   btn.classList.add('sel');
 }
 
@@ -1904,7 +1926,12 @@ function saveFU(){
 
   save();
   clov('ov-fu');
-  if(el('ov-det').classList.contains('on')) renderDet(l);
+  if(el('wm-screen').classList.contains('on')){
+    var updL2 = leads.find(function(x){ return x.id===activeId; });
+    if(updL2) el('wm-body').innerHTML = buildDetHTML(updL2) + '<div style="height:16px"></div>';
+    wmMarkDone();
+  }
+  if(el('ov-det').classList.contains('on')) renderDet(leads.find(function(x){return x.id===activeId;})||{});
   renderAll();
   toast('Next action saved!');
 }
