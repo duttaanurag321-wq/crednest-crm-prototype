@@ -198,6 +198,68 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .at-chip{padding:11px 8px;border-radius:12px;border:2px solid var(--sep);background:var(--bg2);font-size:13px;font-weight:600;font-family:var(--f);cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .15s;color:var(--label)}
 .at-chip:active{transform:scale(.95)}
 .at-chip.sel{border-color:var(--blue);background:var(--bl);color:var(--blue)}
+
+/* ─── TODAY'S WORK CARD ──────────────────────────────────────── */
+.tw-card{background:var(--bg2);border-radius:18px;box-shadow:var(--sh);overflow:hidden;margin:12px 16px 0}
+.tw-head{padding:13px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid var(--sep2)}
+.tw-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--l2)}
+.tw-date-lbl{font-size:11px;color:var(--l3);font-weight:500}
+.tw-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:.5px solid var(--sep2);cursor:pointer;transition:background .1s}
+.tw-row:last-child{border-bottom:none}
+.tw-row:active{background:var(--fill2)}
+.tw-ico{font-size:18px;width:26px;text-align:center;flex-shrink:0}
+.tw-lbl{flex:1;font-size:15px;font-weight:500;color:var(--label)}
+.tw-num{font-size:24px;font-weight:700;letter-spacing:-.5px;min-width:32px;text-align:right}
+.tw-num.n-red{color:var(--red)}
+.tw-num.n-blue{color:var(--blue)}
+.tw-num.n-grey{color:var(--l3)}
+.tw-num.n-green{color:var(--green)}
+.tw-chev{color:var(--l3);flex-shrink:0;margin-left:4px}
+
+/* Start Work button */
+.sw-wrap{padding:12px 16px 0}
+.sw-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 20px;background:var(--blue);border-radius:14px;border:none;font-size:17px;font-weight:700;color:#fff;font-family:var(--f);cursor:pointer;box-shadow:0 4px 20px rgba(0,122,255,.32);transition:transform .12s,opacity .12s;letter-spacing:-.2px}
+.sw-btn:active{transform:scale(.97);opacity:.9}
+.sw-btn.done{background:var(--green);box-shadow:0 4px 20px rgba(52,199,89,.32)}
+.sw-btn.dim{background:var(--fill);color:var(--l2);box-shadow:none}
+
+/* Work Mode — full-screen session */
+.wm-screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column;overflow:hidden}
+.wm-screen.on{display:flex}
+.wm-nav{background:rgba(242,242,247,.96);backdrop-filter:blur(20px);border-bottom:.5px solid var(--sep);padding:0 16px;height:44px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.wm-stop{background:none;border:none;color:var(--red);font-size:15px;font-weight:600;font-family:var(--f);cursor:pointer;padding:4px 0;flex-shrink:0}
+.wm-bar{flex:1;height:5px;background:var(--fill);border-radius:3px;overflow:hidden}
+.wm-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .45s cubic-bezier(.34,1.2,.64,1)}
+.wm-fill.done{background:var(--green)}
+.wm-ctr{font-size:12px;font-weight:600;color:var(--l2);white-space:nowrap;flex-shrink:0}
+.wm-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.wm-body::-webkit-scrollbar{display:none}
+/* All-done screen inside work mode */
+.wm-done{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:40px 32px;text-align:center;gap:10px}
+.wm-done-ico{font-size:64px;line-height:1;margin-bottom:6px}
+.wm-done-title{font-size:24px;font-weight:700;letter-spacing:-.4px;color:#1A8A36}
+.wm-done-sub{font-size:15px;color:var(--l2);line-height:1.6;max-width:280px}
+.wm-done-btn{margin-top:18px;padding:14px 32px;background:var(--green);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:var(--f);cursor:pointer;box-shadow:0 4px 18px rgba(52,199,89,.3)}
+
+/* Next lead button shown at bottom of work-mode lead */
+.wm-next{position:sticky;bottom:0;background:rgba(242,242,247,.97);backdrop-filter:blur(20px);border-top:.5px solid var(--sep);padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));flex-shrink:0;display:flex;align-items:center;gap:10px}
+.wm-next-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--blue);border-radius:12px;border:none;color:#fff;font-size:16px;font-weight:700;font-family:var(--f);cursor:pointer;transition:opacity .1s}
+.wm-next-btn:active{opacity:.8}
+
+/* Pipeline mini-grid */
+.pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 16px}
+.pg-cell{background:var(--bg2);border-radius:13px;padding:12px 10px 10px;box-shadow:var(--sh);text-align:center;cursor:pointer;transition:transform .1s}
+.pg-cell:active{transform:scale(.96)}
+.pg-ico{font-size:20px;margin-bottom:4px}
+.pg-num{font-size:22px;font-weight:700;letter-spacing:-.4px;color:var(--label)}
+.pg-lbl{font-size:10px;color:var(--l2);font-weight:500;margin-top:2px;line-height:1.3}
+
+/* Section label above lead list */
+.home-sec-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 2px}
+.home-sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--l2)}
+.home-filter{display:flex;gap:5px}
+.hf-btn{padding:5px 11px;border-radius:20px;font-size:12px;font-weight:500;font-family:var(--f);background:var(--fill);color:var(--l2);border:none;cursor:pointer;transition:all .15s}
+.hf-btn.on{background:var(--blue);color:#fff}
 </style>
 </head>
 <body>
@@ -262,20 +324,49 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       </div>
       <!-- Normal home -->
       <div id="home-main">
-        <div class="lgt ani"><h1 id="greet">Hello 👋</h1><div class="sub" id="gdate"></div></div>
-        <div id="sbanner"></div>
-        <div class="stats" id="stats"></div>
-        <div id="overdue-banner"></div>
-        <div id="fu-bar-wrap" style="display:none;"><div class="fu-datebar" id="fu-bar"></div></div>
-        <div class="seg ani" id="hfseg" style="margin-top:14px;">
-          <button class="sb on" onclick="setHF('all',this)">All</button>
-          <button class="sb" onclick="setHF('hot',this)">🔥 Hot</button>
-          <button class="sb" onclick="setHF('followup',this)">📅 Follow-up</button>
-          <button class="sb" onclick="setHF('new',this)">New</button>
+        <!-- Greeting -->
+        <div class="lgt ani" style="padding-bottom:4px;">
+          <h1 id="greet" style="font-size:24px;font-weight:700;">Good morning 👋</h1>
+          <div class="sub" id="gdate"></div>
         </div>
-        <div style="height:8px"></div>
+
+        <!-- ── TODAY'S WORK ─────────────────────────────── -->
+        <div class="tw-card ani d1" id="tw-card">
+          <div class="tw-head">
+            <span class="tw-title">Today's Work</span>
+            <span class="tw-date-lbl" id="tw-date-lbl"></span>
+          </div>
+          <!-- rows injected by renderTodaysWork() -->
+          <div id="tw-rows"></div>
+        </div>
+
+        <!-- ── START WORK BUTTON ─────────────────────────── -->
+        <div class="sw-wrap ani d2">
+          <button class="sw-btn" id="sw-btn" onclick="startWork()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Start Work
+          </button>
+        </div>
+
+        <!-- ── PIPELINE STATUS ───────────────────────────── -->
+        <div class="home-sec-hd ani d3" style="padding-bottom:8px;">
+          <span class="home-sec-title">Pipeline</span>
+        </div>
+        <div class="pipe-grid ani d3" id="pipe-grid"></div>
+
+        <!-- ── ALL LEADS LIST ────────────────────────────── -->
+        <div class="home-sec-hd ani d4">
+          <span class="home-sec-title" id="home-list-label">All Leads</span>
+          <div class="home-filter" id="hfseg">
+            <button class="hf-btn on" onclick="setHF('all',this)">All</button>
+            <button class="hf-btn" onclick="setHF('hot',this)">🔥</button>
+            <button class="hf-btn" onclick="setHF('followup',this)">📅</button>
+            <button class="hf-btn" onclick="setHF('new',this)">New</button>
+          </div>
+        </div>
+        <div id="fu-bar-wrap" style="display:none;"><div class="fu-datebar" id="fu-bar"></div></div>
         <div id="homeList"></div>
-        <div style="height:100px"></div>
+        <div style="height:110px"></div>
       </div>
     </div>
   </div>
@@ -322,6 +413,25 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
   <button class="fab" onclick="openAdd()" id="fab">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   </button>
+</div>
+
+<!-- WORK MODE SCREEN — full-screen lead-by-lead session -->
+<div class="wm-screen" id="wm-screen">
+  <div class="st"></div>
+  <div class="wm-nav">
+    <button class="wm-stop" onclick="exitWork()">✕ Stop</button>
+    <div class="wm-bar"><div class="wm-fill" id="wm-fill" style="width:0%"></div></div>
+    <div class="wm-ctr" id="wm-ctr">0 / 0</div>
+  </div>
+  <!-- Lead content rendered here -->
+  <div class="wm-body" id="wm-body"></div>
+  <!-- Sticky next button at bottom -->
+  <div class="wm-next" id="wm-next" style="display:none;">
+    <button class="wm-next-btn" id="wm-next-btn" onclick="workNext()">
+      Next Lead
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
 </div>
 
 <!-- OVERLAYS -->
@@ -933,7 +1043,8 @@ function naMini(l){
 function initApp(){
   fuDateSel=todayStr();
   var h=new Date().getHours();
-  el('greet').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(me.name||me.id).split(' ')[0]+'! 👋';
+  var greeting = h<12 ? 'Good morning' : h<17 ? 'Good afternoon' : 'Good evening';
+  el('greet').textContent = greeting+', '+(me.name||me.id).split(' ')[0]+'! 👋';
   el('gdate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
   el('hnt').textContent=me.role==='admin'?'CredNest CRM':(me.name||me.id).split(' ')[0]+"'s Leads";
   renderAll();goTab('home');
@@ -943,18 +1054,256 @@ function initApp(){
 // ═══════════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════════
-function renderAll(){renderStats();renderHome();renderPipe();renderCalls();}
+function renderAll(){renderHome();renderPipe();renderCalls();}
 
-function renderStats(){
-  var ml=leads;
-  var active=ml.filter(function(l){return!['converted','disqualified'].includes(l.stage);}).length;
-  var conv=ml.filter(function(l){return l.stage==='converted';}).length;
-  var c=Math.round(ml.filter(function(l){return l.stage!=='disqualified';}).reduce(function(s,l){return s+comm(l);},0));
-  el('stats').innerHTML=
-    '<div class="tile blue ani d1"><div class="tv">'+ml.length+'</div><div class="tl">Total Leads</div></div>'+
-    '<div class="tile orange ani d2"><div class="tv">'+active+'</div><div class="tl">Active</div></div>'+
-    '<div class="tile green ani d3"><div class="tv">'+conv+'</div><div class="tl">Converted</div></div>'+
-    '<div class="tile red ani d4"><div class="tv">'+fmt(c)+'</div><div class="tl">Est. Commission</div></div>';
+// ═══════════════════════════════════════════════════════
+// HOME SCREEN — TODAY'S WORK CARD
+// ═══════════════════════════════════════════════════════
+
+function workLeads(){
+  // Returns the prioritised work queue: overdue → today → no-action → future
+  var active = leads.filter(function(l){
+    return l.stage!=='converted' && l.stage!=='disqualified';
+  });
+  var overdue  = active.filter(function(l){ return naStatus(l)==='overdue'; });
+  var todayFU  = active.filter(function(l){ return naStatus(l)==='today'; });
+  var noAction = active.filter(function(l){ return naStatus(l)==='none'; });
+  var future   = active.filter(function(l){ return naStatus(l)==='future'; });
+  // Sort each bucket by priority within it
+  var byPrio = function(a,b){
+    return ({hot:0,warm:1,cold:2}[a.prio]||1) - ({hot:0,warm:1,cold:2}[b.prio]||1);
+  };
+  return overdue.sort(byPrio).concat(todayFU.sort(byPrio), noAction.sort(byPrio), future.sort(byPrio));
+}
+
+function renderTodaysWork(){
+  var active = leads.filter(function(l){
+    return l.stage!=='converted' && l.stage!=='disqualified';
+  });
+  var nOverdue  = active.filter(function(l){ return naStatus(l)==='overdue'; }).length;
+  var nToday    = active.filter(function(l){ return naStatus(l)==='today'; }).length;
+  var nNoAction = active.filter(function(l){ return naStatus(l)==='none'; }).length;
+  var total     = nOverdue + nToday + nNoAction;
+
+  // Date label
+  var dateEl = el('tw-date-lbl');
+  if(dateEl) dateEl.textContent = new Date().toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+
+  var chev = '<svg class="tw-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+  var html = '';
+
+  if(nOverdue > 0){
+    html += '<div class="tw-row" onclick="startWorkFrom(\'overdue\')">'
+      +'<span class="tw-ico">🔴</span>'
+      +'<span class="tw-lbl">Overdue follow-ups</span>'
+      +'<span class="tw-num n-red">'+nOverdue+'</span>'+chev+'</div>';
+  }
+
+  html += '<div class="tw-row" onclick="startWorkFrom(\'today\')">'
+    +'<span class="tw-ico">📅</span>'
+    +'<span class="tw-lbl">Follow-ups today</span>'
+    +'<span class="tw-num '+(nToday>0?'n-blue':'n-grey')+'">'+nToday+'</span>'+chev+'</div>';
+
+  html += '<div class="tw-row" onclick="startWorkFrom(\'none\')">'
+    +'<span class="tw-ico">⚪</span>'
+    +'<span class="tw-lbl">No next action set</span>'
+    +'<span class="tw-num n-grey">'+nNoAction+'</span>'+chev+'</div>';
+
+  var rowsEl = el('tw-rows');
+  if(rowsEl) rowsEl.innerHTML = html;
+
+  // Start Work button
+  var btn = el('sw-btn');
+  if(btn){
+    if(total === 0){
+      btn.className = 'sw-btn done';
+      btn.innerHTML = '<span style="font-size:20px;">🎉</span> All caught up!';
+    } else {
+      btn.className = 'sw-btn';
+      btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'
+        +' Start Work'
+        +(total > 0 ? ' <span style="opacity:.75;font-size:14px;font-weight:500;margin-left:2px;">· '+total+' lead'+(total>1?'s':'')+'</span>' : '');
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PIPELINE STATUS MINI GRID
+// ═══════════════════════════════════════════════════════
+function renderPipelineGrid(){
+  var g = el('pipe-grid'); if(!g) return;
+  var stages = [
+    {key:'new',       ico:'🆕', lbl:'New'},
+    {key:'contacted', ico:'📞', lbl:'Contacted'},
+    {key:'qualified', ico:'💡', lbl:'Interested'},
+    {key:'documents', ico:'📄', lbl:'Docs Pending'},
+    {key:'submitted', ico:'🏦', lbl:'At Bank'},
+    {key:'converted', ico:'🎉', lbl:'Approved'}
+  ];
+  g.innerHTML = stages.map(function(s){
+    var cnt = leads.filter(function(l){ return l.stage===s.key; }).length;
+    return '<div class="pg-cell" onclick="goTab(\'pipe\');setPS(\''+s.key+'\',document.querySelector(\'#pseg .sb\'))">'
+      +'<div class="pg-ico">'+s.ico+'</div>'
+      +'<div class="pg-num">'+(cnt||'0')+'</div>'
+      +'<div class="pg-lbl">'+s.lbl+'</div>'
+      +'</div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// WORK MODE — Start Work / workNext / exitWork
+// ═══════════════════════════════════════════════════════
+var wmQueue   = [];   // ordered lead list for the session
+var wmIndex   = 0;    // current position
+
+function startWork(){
+  wmQueue = workLeads();
+  if(wmQueue.length === 0){ toast('No leads need action right now 🎉'); return; }
+  wmIndex = 0;
+  openWorkScreen();
+}
+
+function startWorkFrom(filter){
+  // Start work filtered to a specific bucket
+  var active = leads.filter(function(l){
+    return l.stage!=='converted' && l.stage!=='disqualified';
+  });
+  var byPrio = function(a,b){
+    return ({hot:0,warm:1,cold:2}[a.prio]||1) - ({hot:0,warm:1,cold:2}[b.prio]||1);
+  };
+  if(filter === 'overdue'){
+    wmQueue = active.filter(function(l){ return naStatus(l)==='overdue'; }).sort(byPrio);
+  } else if(filter === 'today'){
+    wmQueue = active.filter(function(l){ return naStatus(l)==='today'; }).sort(byPrio);
+  } else if(filter === 'none'){
+    wmQueue = active.filter(function(l){ return naStatus(l)==='none'; }).sort(byPrio);
+  } else {
+    wmQueue = workLeads();
+  }
+  if(wmQueue.length === 0){ toast('No leads in that group'); return; }
+  wmIndex = 0;
+  openWorkScreen();
+}
+
+function openWorkScreen(){
+  el('wm-screen').classList.add('on');
+  renderWorkLead();
+}
+
+function renderWorkLead(){
+  var total = wmQueue.length;
+
+  // Progress bar
+  var pct = total > 0 ? Math.round((wmIndex / total) * 100) : 0;
+  var fillEl = el('wm-fill');
+  if(fillEl){
+    fillEl.style.width = pct + '%';
+    fillEl.className = 'wm-fill' + (wmIndex >= total ? ' done' : '');
+  }
+  el('wm-ctr').textContent = wmIndex + ' / ' + total;
+
+  // All done?
+  if(wmIndex >= total){
+    el('wm-next').style.display = 'none';
+    el('wm-body').innerHTML =
+      '<div class="wm-done">'
+      +'<div class="wm-done-ico">🎉</div>'
+      +'<div class="wm-done-title">All follow-ups done!</div>'
+      +'<div class="wm-done-sub">Great work today. Check back tomorrow for your next set of follow-ups.</div>'
+      +'<button class="wm-done-btn" onclick="exitWork()">Back to Home</button>'
+      +'</div>';
+    return;
+  }
+
+  var l = wmQueue[wmIndex];
+  if(!l){ exitWork(); return; }
+
+  // Set activeId so all overlays (call, note, stage, fu) work correctly
+  activeId = l.id;
+
+  // Render the detail view into wm-body
+  el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
+
+  // Next button label
+  var nextBtn = el('wm-next-btn');
+  var isLast = (wmIndex === total - 1);
+  if(nextBtn){
+    nextBtn.innerHTML = isLast
+      ? 'Finish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+      : 'Next Lead <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+  }
+  el('wm-next').style.display = 'flex';
+
+  // Scroll back to top
+  var body = el('wm-body');
+  if(body) body.scrollTo({top:0});
+}
+
+function workNext(){
+  wmIndex++;
+  renderWorkLead();
+}
+
+function exitWork(){
+  el('wm-screen').classList.remove('on');
+  wmQueue = []; wmIndex = 0;
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════════
+// HOME LEAD LIST — filter tabs
+// ═══════════════════════════════════════════════════════
+function setHF(f,e){
+  hf = f;
+  document.querySelectorAll('#hfseg .hf-btn').forEach(function(b){ b.classList.remove('on'); });
+  if(e) e.classList.add('on');
+  if(f==='followup'){ fuDateSel=todayStr(); buildFUBar(); el('fu-bar-wrap').style.display='block'; }
+  else { el('fu-bar-wrap').style.display='none'; }
+  renderHomeList();
+}
+
+function renderHome(){
+  renderTodaysWork();
+  renderPipelineGrid();
+  renderHomeList();
+}
+
+function renderHomeList(){
+  var ml = leads.slice();
+  if(hf==='hot') ml = ml.filter(function(l){ return l.prio==='hot'; });
+  else if(hf==='followup'){
+    ml = ml.filter(function(l){
+      var dt = l.nextActionDateTime || l.nextfu;
+      return dt && dt.slice(0,10) === fuDateSel;
+    });
+  }
+  else if(hf==='new') ml = ml.filter(function(l){ return l.stage==='new'; });
+  if(hf!=='followup') ml = ml.filter(function(l){ return l.stage!=='converted' && l.stage!=='disqualified'; });
+
+  // Sort overdue first → today → future → none → then by priority
+  var statusRank = {overdue:0, today:1, future:2, none:3};
+  ml.sort(function(a,b){
+    if(hf==='followup'){
+      var da = a.nextActionDateTime||a.nextfu||'z';
+      var db = b.nextActionDateTime||b.nextfu||'z';
+      return da < db ? -1 : 1;
+    }
+    var ra = statusRank[naStatus(a)]||3, rb = statusRank[naStatus(b)]||3;
+    if(ra !== rb) return ra - rb;
+    return ({hot:0,warm:1,cold:2}[a.prio]||1) - ({hot:0,warm:1,cold:2}[b.prio]||1);
+  });
+
+  // Label
+  var labelMap = {all:'All Leads', hot:'🔥 Hot Leads', followup:'📅 Follow-ups', new:'New Leads'};
+  var lblEl = el('home-list-label');
+  if(lblEl) lblEl.textContent = labelMap[hf] || 'All Leads';
+
+  var emsg = hf==='followup' ? 'No follow-ups for this date' : 'No leads here';
+  var esub = hf==='followup' ? 'Select a different date above' : 'Tap + to add your first lead';
+  el('homeList').innerHTML = ml.length === 0
+    ? '<div class="empty"><div class="emico">'+(hf==='followup'?'📅':'📋')+'</div><div class="emti">'+emsg+'</div><div class="emsu">'+esub+'</div></div>'
+    : ml.map(lcard).join('') + '<div style="height:8px"></div>';
 }
 
 function lcard(l){
@@ -1037,77 +1386,6 @@ function logWA(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'wa',tx:'💬 WhatsApp opened',ts:n});l.updated=n;save();
 }
-function setHF(f,e){
-  hf=f;
-  document.querySelectorAll('#hfseg .sb').forEach(function(b){b.classList.remove('on');});
-  e.classList.add('on');
-  if(f==='followup'){fuDateSel=todayStr();buildFUBar();el('fu-bar-wrap').style.display='block';}
-  else{el('fu-bar-wrap').style.display='none';}
-  renderHome();
-}
-// Tapping the overdue banner switches to "All" tab and scrolls to top —
-// overdue leads are already sorted first in "All" view.
-function setHFOverdue(){
-  hf='all';
-  document.querySelectorAll('#hfseg .sb').forEach(function(b){b.classList.remove('on');});
-  var allBtn=document.querySelector('#hfseg .sb');if(allBtn)allBtn.classList.add('on');
-  el('fu-bar-wrap').style.display='none';
-  renderHome();
-  var sc=el('home-sc');if(sc)sc.scrollTo({top:0,behavior:'smooth'});
-}
-function renderHome(){
-  var ml=leads.slice();
-  if(hf==='hot')ml=ml.filter(function(l){return l.prio==='hot';});
-  else if(hf==='followup'){
-    ml=ml.filter(function(l){
-      var dt=l.nextActionDateTime||l.nextfu;
-      return dt&&dt.slice(0,10)===fuDateSel;
-    });
-  }
-  else if(hf==='new')ml=ml.filter(function(l){return l.stage==='new';});
-  if(hf!=='followup')ml=ml.filter(function(l){return l.stage!=='converted'&&l.stage!=='disqualified';});
-
-  // ── Sort: overdue first → today → future → none → then by priority ──
-  var statusRank = {overdue:0, today:1, future:2, none:3};
-  ml.sort(function(a,b){
-    if(hf==='followup'){
-      var da=a.nextActionDateTime||a.nextfu||'z';
-      var db=b.nextActionDateTime||b.nextfu||'z';
-      return da<db?-1:1;
-    }
-    var ra=statusRank[naStatus(a)]||3, rb=statusRank[naStatus(b)]||3;
-    if(ra!==rb) return ra-rb;
-    return({hot:0,warm:1,cold:2}[a.prio]||1)-({hot:0,warm:1,cold:2}[b.prio]||1);
-  });
-
-  // ── Overdue banner (shown on all tabs except followup) ─────────────
-  var allOverdue = leads.filter(function(l){
-    return naStatus(l)==='overdue' && l.stage!=='converted' && l.stage!=='disqualified';
-  });
-  var bannerEl = el('overdue-banner');
-  if(bannerEl){
-    if(allOverdue.length > 0 && hf !== 'followup'){
-      var n = allOverdue.length;
-      bannerEl.innerHTML =
-        '<div class="overdue-banner" onclick="setHFOverdue()">'
-        +'<div class="ob-ico">⚠️</div>'
-        +'<div class="ob-body">'
-        +'<div class="ob-title">'+n+' Follow-up'+(n>1?'s':'')+' Overdue</div>'
-        +'<div class="ob-sub">Tap to view — these need immediate attention</div>'
-        +'</div>'
-        +'<svg class="ob-arr" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>'
-        +'</div>';
-    } else {
-      bannerEl.innerHTML = '';
-    }
-  }
-
-  var emsg=hf==='followup'?'No follow-ups for this date':'No leads here';
-  var esub=hf==='followup'?'Select a different date above':'Tap + to add your first lead';
-  el('homeList').innerHTML=ml.length===0
-    ?'<div class="empty"><div class="emico">'+(hf==='followup'?'📅':'📋')+'</div><div class="emti">'+emsg+'</div><div class="emsu">'+esub+'</div></div>'
-    :ml.map(lcard).join('')+'<div style="height:8px"></div>';
-}
 function setPS(s,e){ps=s;document.querySelectorAll('#pseg .sb').forEach(function(b){b.classList.remove('on');});e.classList.add('on');renderPipe();}
 function renderPipe(){
   var ml=leads.filter(function(l){return l.stage===ps;});
@@ -1181,7 +1459,7 @@ function fuBlock(l){
   return '';
 }
 
-function renderDet(l){
+function buildDetHTML(l){
   var e=elig(l),ec=e>=75?'ehi':e>=50?'eme':'elo';
   var elbl=e>=75?'High — Likely Eligible':e>=50?'Medium — Needs Review':'Low — High Risk';
   var stgs=['new','contacted','qualified','documents','submitted','converted'],si=stgs.indexOf(l.stage);
@@ -1205,8 +1483,8 @@ function renderDet(l){
   var wamsg=encodeURIComponent('Hi '+l.name+'! Following up on your '+(l.ltype||'loan')+' enquiry. 🙏');
   var cc=l.cibil>=750?'var(--green)':l.cibil>=700?'var(--orange)':'var(--red)';
 
-  el('det-body').innerHTML=
-    // ── Lead header ───────────────────────────────────────────────
+  return (
+    // ── Lead header ──────────────────────────────────────────────
     '<div style="display:flex;align-items:center;gap:13px;padding:16px;border-bottom:.5px solid var(--sep);">'+
       '<div class="av" style="background:'+abg(l.name)+';width:54px;height:54px;font-size:19px;">'+ini(l.name)+'</div>'+
       '<div><div style="font-size:20px;font-weight:700;letter-spacing:-.3px;">'+l.name+'</div>'+
@@ -1217,16 +1495,15 @@ function renderDet(l){
       '</div></div>'+
     '</div>'+
 
-    // ── NEXT ACTION CARD (NEW — shown at the top, above call buttons) ──
+    // ── NEXT ACTION CARD ─────────────────────────────────────────
     '<div style="padding:12px 16px 0;">'+
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--l2);margin-bottom:7px;">Next Action</div>'+
       naDetailCard(l)+
     '</div>'+
 
-    // ── Legacy fuBlock (only shows for old leads without nextActionDateTime) ──
     fuBlock(l)+
 
-    // ── Call / WhatsApp buttons ────────────────────────────────────
+    // ── Call / WhatsApp buttons ──────────────────────────────────
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px;border-bottom:.5px solid var(--sep);">'+
       '<a href="tel:'+phone+'" onclick="logCallTap(\''+l.id+'\')" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--gl);color:#1A8A36;border-radius:12px;padding:13px 8px;font-size:15px;font-weight:600;text-decoration:none;font-family:var(--f);">'+
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>Call Now</a>'+
@@ -1234,21 +1511,20 @@ function renderDet(l){
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>WhatsApp</a>'+
     '</div>'+
 
-    // ── Quick actions strip (Log Call removed — call from Call Now button only) ──
+    // ── Quick actions ────────────────────────────────────────────
     '<div class="qastrip">'+
       '<button class="qab" onclick="openNoteOv()"><div class="qaico" style="background:var(--bl);">📝</div><span class="qalbl">Note</span></button>'+
       '<button class="qab" onclick="openStageOv()"><div class="qaico" style="background:var(--ol);">📍</div><span class="qalbl">Stage</span></button>'+
       '<button class="qab" onclick="openFUOv()"><div class="qaico" style="background:var(--pl);">📅</div><span class="qalbl">Next Action</span></button>'+
     '</div>'+
 
-    // ── Progress bar ───────────────────────────────────────────────
+    // ── Progress bar ─────────────────────────────────────────────
     '<div style="background:var(--bg2);margin:14px 16px 0;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;">'+
       '<div style="padding:12px 16px 4px;font-size:12px;font-weight:600;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;">Progress</div>'+
       '<div class="spr">'+sdots+'</div>'+
       '<div class="spls"><span>New</span><span>Called</span><span>Qualified</span><span>Docs</span><span>Submitted</span><span>Done</span></div>'+
     '</div>'+
 
-    // ── Details ────────────────────────────────────────────────────
     '<div class="sec"><div class="sh">Details</div><div class="lst">'+
       [['Phone','<a href="tel:'+phone+'" style="color:var(--blue);">'+(l.phone||'—')+'</a>'],
        ['City',l.city||'—'],['Employment',l.emp||'—'],['Income',fmt(l.income)],['EMI',fmt(l.emi)],
@@ -1258,24 +1534,24 @@ function renderDet(l){
        }).join('')+
     '</div></div>'+
 
-    // ── Eligibility ────────────────────────────────────────────────
     '<div class="sec"><div style="background:var(--bg2);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:center;"><div style="font-size:15px;font-weight:600;">'+elbl+'</div>'+
       '<div style="font-size:18px;font-weight:700;color:'+(e>=75?'var(--green)':e>=50?'var(--orange)':'var(--red)')+';">'+e+'%</div></div>'+
       '<div class="etr" style="margin-top:8px;"><div class="ef '+ec+'" style="width:'+e+'%"></div></div>'+
     '</div></div>'+
 
-    // ── Documents ──────────────────────────────────────────────────
     '<div class="sec"><div class="sh">Documents</div><div class="lst">'+dhtml+'</div></div>'+
 
-    // ── Notes ──────────────────────────────────────────────────────
     '<div class="sec"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;padding:0 4px;"><div class="sh" style="margin:0;">Notes</div><button onclick="openNoteOv()" style="background:none;border:none;color:var(--blue);font-size:15px;font-family:var(--f);cursor:pointer;">+ Add</button></div><div class="lst">'+nhtml+'</div></div>'+
 
-    // ── Activity ───────────────────────────────────────────────────
     '<div class="sec"><div class="sh">Activity</div><div class="lst">'+tl+'</div></div>'+
 
-    // ── Delete ─────────────────────────────────────────────────────
-    '<div class="sec" style="margin-top:16px;margin-bottom:32px;"><button class="btn btn-rd" onclick="delLead(\''+l.id+'\')">Delete Lead</button></div>';
+    '<div class="sec" style="margin-top:16px;margin-bottom:32px;"><button class="btn btn-rd" onclick="delLead(\''+l.id+'\')">Delete Lead</button></div>'
+  );
+}
+
+function renderDet(l){
+  el('det-body').innerHTML = buildDetHTML(l);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1387,6 +1663,10 @@ function saveCall(){
   save();
   clov('ov-call');
   if(el('ov-det').classList.contains('on')) renderDet(l);
+  // If work mode is active, refresh current lead and advance automatically
+  if(el('wm-screen').classList.contains('on')){
+    workNext();
+  }
   renderAll();
   toast('Call logged!');
 }
