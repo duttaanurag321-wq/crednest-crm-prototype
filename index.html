@@ -267,6 +267,9 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .wm-next{position:sticky;bottom:0;background:rgba(242,242,247,.97);backdrop-filter:blur(20px);border-top:.5px solid var(--sep);padding:12px 16px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));flex-shrink:0;display:flex;align-items:center;gap:10px}
 .wm-next-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:var(--blue);border-radius:12px;border:none;color:#fff;font-size:16px;font-weight:700;font-family:var(--f);cursor:pointer;transition:opacity .1s}
 .wm-next-btn:active{opacity:.8}
+.wm-skip{flex-shrink:0;background:none;border:none;color:var(--l2);font-size:13px;font-weight:500;font-family:var(--f);cursor:pointer;padding:4px 0;white-space:nowrap}
+.wm-skip:active{opacity:.6}
+.wm-next-btn.locked{background:var(--fill);color:var(--l3);box-shadow:none;pointer-events:none}
 
 /* Pipeline mini-grid */
 .pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 16px}
@@ -470,10 +473,11 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
   <div class="wm-body" id="wm-body"></div>
   <!-- Sticky next button at bottom -->
   <div class="wm-next" id="wm-next" style="display:none;">
-    <button class="wm-next-btn" id="wm-next-btn" onclick="workNext()">
+    <button class="wm-next-btn locked" id="wm-next-btn" onclick="workNext()">
       Next Lead
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
+    <button class="wm-skip" id="wm-skip-btn" onclick="workSkip()">Skip</button>
   </div>
 </div>
 
@@ -582,8 +586,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       </div></div>
 
       <div class="fsec" style="margin-top:10px;"><div class="fgrp">
-        <div class="fr"><span class="flab">Date</span><input type="date" id="cs-fu-date" style="text-align:right;"></div>
-        <div class="fr"><span class="flab">Time</span><input type="time" id="cs-fu-time" style="text-align:right;"></div>
+        <div class="fr"><span class="flab">Date</span><input type="date" id="cs-fu-date" oninput="previewNADate()" style="text-align:right;"></div>
+        <div class="fr"><span class="flab">Time</span><input type="time" id="cs-fu-time" oninput="previewNADate()" style="text-align:right;"></div>
       </div></div>
 
       <div style="height:32px"></div>
@@ -654,8 +658,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       <!-- Date & Time -->
       <div class="fsec" style="margin-top:14px;"><div class="flbl">Date & Time</div>
         <div class="fgrp">
-          <div class="fr"><span class="flab">Date</span><input type="date" id="fu-date" style="text-align:right;"></div>
-          <div class="fr"><span class="flab">Time</span><input type="time" id="fu-time" style="text-align:right;"></div>
+          <div class="fr"><span class="flab">Date</span><input type="date" id="fu-date" oninput="previewNADate()" style="text-align:right;"></div>
+          <div class="fr"><span class="flab">Time</span><input type="time" id="fu-time" oninput="previewNADate()" style="text-align:right;"></div>
         </div>
       </div>
 
@@ -1407,6 +1411,7 @@ function renderPipelineGrid(){
 // ═══════════════════════════════════════════════════════
 var wmQueue   = [];   // ordered lead list for the session
 var wmIndex   = 0;    // current position
+var wmDirty   = false; // true once any change is made to current lead
 
 function startWork(){
   var q = workLeads();
@@ -1527,12 +1532,18 @@ function renderWorkLead(){
 
   el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
 
+  wmDirty = false; // reset for each new lead
+
   var nextBtn = el('wm-next-btn');
   if(nextBtn){
+    nextBtn.classList.add('locked');
+    nextBtn.style.transform = '';
     nextBtn.innerHTML = remaining === 1
       ? 'Finish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
       : 'Next Lead · '+(remaining - 1)+' more <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
   }
+  var skipBtn = el('wm-skip-btn');
+  if(skipBtn) skipBtn.style.display = remaining === 1 ? 'none' : 'block';
   el('wm-next').style.display = 'flex';
 
   var body = el('wm-body');
@@ -1541,8 +1552,31 @@ function renderWorkLead(){
 
 function workNext(){
   haptic('light');
+  wmDirty = false;
   wmIndex++;
   renderWorkLead();
+}
+
+function workSkip(){
+  // Skip without requiring a change — subtle haptic, dim feedback
+  haptic('light');
+  wmDirty = false;
+  wmIndex++;
+  renderWorkLead();
+}
+
+// Call this whenever a change is made to the active lead
+function markDirty(){
+  if(!el('wm-screen').classList.contains('on')) return;
+  if(wmDirty) return;
+  wmDirty = true;
+  var btn = el('wm-next-btn');
+  if(btn){
+    btn.classList.remove('locked');
+    // Brief scale animation to draw attention
+    btn.style.transform = 'scale(1.03)';
+    setTimeout(function(){ btn.style.transform = ''; }, 200);
+  }
 }
 
 function exitWork(){
@@ -1660,6 +1694,7 @@ var pendingCallId = null;
 function logCallTap(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
   haptic('medium');
+  markDirty();
   var n=new Date().toISOString();
   l.act=l.act||[];l.act.push({t:'call',tx:'Call placed',ts:n});
   l.updated=n;save();
@@ -1686,6 +1721,7 @@ window.addEventListener('pageshow', function(){
 });
 function logWA(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
+  markDirty();
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'wa',tx:'WhatsApp opened',ts:n});l.updated=n;save();
 }
 function setPS(s,e){
@@ -1822,7 +1858,7 @@ function buildDetHTML(l){
     // ── NEXT ACTION CARD ─────────────────────────────────────────
     '<div style="padding:12px 16px 0;">'+
       '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--l2);margin-bottom:7px;">Next Action</div>'+
-      naDetailCard(l)+
+      '<div data-na-card="1">'+naDetailCard(l)+'</div>'+
     '</div>'+
 
     fuBlock(l)+
@@ -1894,6 +1930,7 @@ function openStageOv(){
 function mvStage(s){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
   haptic('medium');
+  markDirty();
   var n=new Date().toISOString();l.stage=s;l.updated=n;l.act=l.act||[];l.act.push({t:'stage',tx:'Stage → '+SL[s],ts:n});
   save();clov('ov-stage');renderDet(l);renderAll();toast('Moved to '+SL[s]);
 }
@@ -1948,6 +1985,7 @@ function pickCS(s,e){cs=s;document.querySelectorAll('.cbtn').forEach(function(b)
 
 function saveCall(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
+  markDirty();
   var n=new Date().toISOString();
   var note   = el('cs-note').value.trim();
   var dur    = el('cs-dur').value.trim();
@@ -2000,6 +2038,7 @@ function openNoteOv(){el('note-txt').value='';el('ov-note').classList.add('on');
 function saveNote(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
   var txt=el('note-txt').value.trim();if(!txt){clov('ov-note');return;}
+  markDirty();
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'note',tx:txt,ts:n});l.updated=n;
   save();clov('ov-note');renderDet(l);toast('Note added');
 }
@@ -2047,6 +2086,7 @@ function delLead(id){
 }
 function togDoc(id,k){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
+  markDirty();
   l.docs=l.docs||{};l.docs[k]=!l.docs[k];
   var dn='';for(var i=0;i<DOCS.length;i++){if(DOCS[i].k===k){dn=DOCS[i].n;break;}}
   var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'doc',tx:(l.docs[k]?'Received: ':'Removed: ')+dn,ts:n});
@@ -2206,10 +2246,76 @@ function openFUOv(){
   el('ov-fu').classList.add('on');
 }
 
+// ─── LIVE OVERDUE PREVIEW ─────────────────────────────────────────
+// Called oninput on date/time fields in both the Next Action overlay
+// and the Call overlay. Immediately updates the naDetailCard and
+// overdue indicators in the background without saving.
+function previewNADate(){
+  var l = leads.find(function(x){ return x.id === activeId; });
+  if(!l) return;
+
+  // Pick date/time from whichever overlay is currently open
+  var d = '', t = '09:00';
+  if(el('ov-fu').classList.contains('on')){
+    d = el('fu-date').value;
+    t = el('fu-time').value || '09:00';
+  } else if(el('ov-call').classList.contains('on')){
+    d = el('cs-fu-date').value;
+    t = el('cs-fu-time').value || '09:00';
+  }
+  if(!d) return;
+
+  var iso = d + 'T' + t + ':00';
+
+  // Temporarily update in memory (will be properly saved on Save)
+  l.nextActionDateTime = iso;
+  l.nextfu = iso;
+
+  // Re-render the naDetailCard in the background lead view
+  // Work mode body
+  if(el('wm-screen').classList.contains('on')){
+    var naSection = el('wm-body').querySelector('[data-na-card]');
+    if(naSection) naSection.innerHTML = naDetailCard(l);
+    // Also update the hint bar status
+    var status = naStatus(l);
+    var hintDot = el('wm-hint-dot');
+    var hintTxt = el('wm-hint-txt');
+    var hintWrap = el('wm-hint');
+    if(hintDot && hintTxt && hintWrap){
+      var dotCol = status==='overdue'?'var(--red)':status==='today'?'var(--blue)':status==='none'?'var(--orange)':'var(--green)';
+      hintDot.style.background = dotCol;
+      hintWrap.style.background = status==='overdue'?'rgba(255,59,48,.05)':status==='today'?'rgba(0,122,255,.05)':status==='none'?'rgba(255,149,0,.05)':'var(--bg)';
+      if(status !== 'overdue') hintTxt.textContent = status==='today'?'Scheduled for today':status==='none'?'No next action set':'Upcoming follow-up';
+      else hintTxt.textContent = 'Overdue follow-up';
+    }
+    // Update overdue card class on wm-body lead card if rendered
+    var lcardEl = el('wm-body').querySelector('.lcard-overdue');
+    // Actually re-render overdue row in detail header area
+    var overdueRow = el('wm-body').querySelector('.overdue-row');
+    var detOBar = el('wm-body').querySelector('.det-overdue-bar');
+    if(status !== 'overdue'){
+      if(overdueRow) overdueRow.style.display = 'none';
+      if(detOBar) detOBar.style.display = 'none';
+    } else {
+      if(overdueRow) overdueRow.style.display = '';
+      if(detOBar) detOBar.style.display = '';
+    }
+  }
+  // Normal detail overlay
+  if(el('ov-det').classList.contains('on')){
+    var naSection2 = el('det-body').querySelector('[data-na-card]');
+    if(naSection2) naSection2.innerHTML = naDetailCard(l);
+    var detOBar2 = el('det-body').querySelector('.det-overdue-bar');
+    var status2 = naStatus(l);
+    if(detOBar2) detOBar2.style.display = status2==='overdue' ? '' : 'none';
+  }
+}
+
 function saveFU(){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
   var d=el('fu-date').value, t=el('fu-time').value||'09:00';
   if(!d){toast('Pick a date first');return;}
+  markDirty();
   var iso = d+'T'+t+':00';
   var note = el('na-note-inp').value.trim();
   var n = new Date().toISOString();
