@@ -68,7 +68,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .tab.on .tl2{color:var(--blue)}.tab.on .ti svg{color:var(--blue)}
 .fab{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 80px);right:20px;width:52px;height:52px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,122,255,.38);border:none;cursor:pointer;z-index:50;transition:transform .1s}
 .fab:active{transform:scale(.9)}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:200;display:none;align-items:flex-end}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:400;display:none;align-items:flex-end}
 .ov.on{display:flex;animation:ovIn .2s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
 .sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;max-height:94vh;display:flex;flex-direction:column;animation:shUp .3s cubic-bezier(.32,.72,0,1)}
@@ -949,7 +949,7 @@ function setSbar(type, msg){
 
 // ─── PULL TO REFRESH ──────────────────────────────────────────────
 (function(){
-  var sc, startY=0, pulling=false, threshold=60, refreshing=false;
+  var sc, startY=0, pulling=false, threshold=120, refreshing=false;
 
   function initPTR(){
     sc = el('home-sc');
@@ -975,7 +975,7 @@ function setSbar(type, msg){
     var wrap = el('ptr-wrap');
     var ico  = el('ptr-ico');
     var txt  = el('ptr-txt');
-    if(wrap) wrap.style.height = Math.min(dy * 0.5, 50) + 'px';
+    if(wrap) wrap.style.height = Math.min(dy * 0.5, 70) + 'px';
     if(ico){
       if(dy >= threshold){ ico.className='ptr-ico pull'; }
       else               { ico.className='ptr-ico'; }
@@ -986,9 +986,10 @@ function setSbar(type, msg){
   function onTE(){
     if(!pulling) return;
     var wrap = el('ptr-wrap');
-    var dy   = wrap ? parseFloat(wrap.style.height||'0') * 2 : 0;
-    pulling  = false;
-    if(dy * 2 >= threshold){
+    // The stored height is dy*0.5, so actual pull = height*2
+    var height = wrap ? parseFloat(wrap.style.height||'0') : 0;
+    pulling = false;
+    if(height >= threshold / 2){
       triggerRefresh();
     } else {
       resetPTR();
