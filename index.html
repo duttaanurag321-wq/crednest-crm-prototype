@@ -249,7 +249,11 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .wm-bar{flex:1;height:5px;background:var(--fill);border-radius:3px;overflow:hidden}
 .wm-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .45s cubic-bezier(.34,1.2,.64,1)}
 .wm-fill.done{background:var(--green)}
-.wm-ctr{font-size:12px;font-weight:600;color:var(--l2);white-space:nowrap;flex-shrink:0}
+/* Context hint strip below nav */
+.wm-hint{display:flex;align-items:center;gap:9px;padding:10px 16px;border-bottom:.5px solid var(--sep);flex-shrink:0}
+.wm-hint-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.wm-hint-txt{font-size:13px;font-weight:600;flex:1;line-height:1.3}
+.wm-hint-sub{font-size:12px;color:var(--l2);line-height:1.3;margin-top:1px}
 .wm-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .wm-body::-webkit-scrollbar{display:none}
 /* All-done screen inside work mode */
@@ -453,7 +457,14 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
   <div class="wm-nav">
     <button class="wm-stop" onclick="exitWork()">✕ Stop</button>
     <div class="wm-bar"><div class="wm-fill" id="wm-fill" style="width:0%"></div></div>
-    <div class="wm-ctr" id="wm-ctr">0 / 0</div>
+  </div>
+  <!-- Context hint — updated per lead -->
+  <div class="wm-hint" id="wm-hint" style="display:none;">
+    <div class="wm-hint-dot" id="wm-hint-dot"></div>
+    <div>
+      <div class="wm-hint-txt" id="wm-hint-txt"></div>
+      <div class="wm-hint-sub" id="wm-hint-sub"></div>
+    </div>
   </div>
   <!-- Lead content rendered here -->
   <div class="wm-body" id="wm-body"></div>
@@ -1449,27 +1460,21 @@ function renderWorkLead(){
     var rl = leads.find(function(x){ return x.id === wmQueue[ri].id; });
     if(rl && naStatus(rl) !== 'future') remaining++;
   }
-
-  // Count how many have been actioned (skipped past or explicitly nexted)
   var done = 0;
-  for(var di = 0; di < wmIndex; di++){
-    var dl = leads.find(function(x){ return x.id === wmQueue[di].id; });
-    // Count as done whether actioned (future) or explicitly skipped
-    done++;
-  }
+  for(var di = 0; di < wmIndex; di++){ done++; }
   var effectiveTotal = done + remaining;
 
-  // Progress bar
+  // Progress bar — visual only, no numbers
   var pct = effectiveTotal > 0 ? Math.round((done / effectiveTotal) * 100) : 0;
   var fillEl = el('wm-fill');
   if(fillEl){
     fillEl.style.width = pct + '%';
     fillEl.className = 'wm-fill' + (remaining === 0 ? ' done' : '');
   }
-  el('wm-ctr').textContent = done + ' / ' + effectiveTotal;
 
   // All done?
   if(wmIndex >= wmQueue.length || remaining === 0){
+    var hintEl = el('wm-hint'); if(hintEl) hintEl.style.display = 'none';
     el('wm-next').style.display = 'none';
     el('wm-body').innerHTML =
       '<div class="wm-done">'
@@ -1485,6 +1490,41 @@ function renderWorkLead(){
   if(!l){ exitWork(); return; }
 
   activeId = l.id;
+
+  // ── Context hint ────────────────────────────────────────────────
+  var status = naStatus(l);
+  var hints = {
+    overdue: {
+      dot: 'var(--red)',
+      txt: 'Overdue follow-up',
+      sub: 'This lead has been waiting. Call now, update the status, and set your next action.'
+    },
+    today: {
+      dot: 'var(--blue)',
+      txt: 'Scheduled for today',
+      sub: 'You planned to follow up today. Connect with this lead and move it forward.'
+    },
+    none: {
+      dot: 'var(--orange)',
+      txt: 'No next action set',
+      sub: 'Reach out to this lead, qualify their intent, and always set a next action before moving on.'
+    },
+    future: {
+      dot: 'var(--green)',
+      txt: 'Upcoming follow-up',
+      sub: 'This lead has a scheduled action. Review and make sure everything is on track.'
+    }
+  };
+  var h = hints[status] || hints.none;
+  var hintWrap = el('wm-hint');
+  if(hintWrap){
+    hintWrap.style.display = 'flex';
+    hintWrap.style.background = status==='overdue'?'rgba(255,59,48,.05)':status==='today'?'rgba(0,122,255,.05)':status==='none'?'rgba(255,149,0,.05)':'var(--bg)';
+    el('wm-hint-dot').style.background = h.dot;
+    el('wm-hint-txt').textContent = h.txt;
+    el('wm-hint-sub').textContent = h.sub;
+  }
+
   el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
 
   var nextBtn = el('wm-next-btn');
