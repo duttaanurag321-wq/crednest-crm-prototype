@@ -94,7 +94,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:14px}
 .cbtn{padding:14px 8px;border-radius:13px;border:none;font-size:13px;font-weight:600;font-family:var(--f);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all .1s}
 .cbtn:active{transform:scale(.94)}
-.cbtn .ico{font-size:22px}
+.cbtn .ico{display:flex;align-items:center;justify-content:center;width:28px;height:28px}
 .cbtn.gn{background:var(--gl);color:#1A8A36}.cbtn.rd{background:var(--rl);color:var(--red)}.cbtn.og{background:var(--ol);color:#B86800}.cbtn.gr{background:var(--fill);color:var(--l2)}.cbtn.bl{background:var(--bl);color:var(--blue)}.cbtn.pu{background:var(--pl);color:var(--purple)}
 .cbtn.sel{box-shadow:0 0 0 3px currentColor}
 .tli{display:flex;gap:12px;padding:10px 16px}
@@ -107,7 +107,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .spr{display:flex;gap:4px;padding:12px 16px 4px}
 .spd{flex:1;height:4px;border-radius:2px;background:var(--sep)}
 .spd.dn{background:var(--green)}.spd.cr{background:var(--blue)}
-.spls{display:flex;justify-content:space-between;padding:4px 16px 12px}
+.spls{display:flex;justify-content:space-between;padding:4px 16px 12px;overflow:hidden}
 .spl{font-size:9px;color:var(--l3);font-weight:500}
 .etr{height:8px;background:var(--fill);border-radius:4px;overflow:hidden}
 .ef{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
@@ -156,7 +156,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .phdr{display:flex;flex-direction:column;align-items:center;padding:24px 20px 16px}
 .pav{width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;margin-bottom:12px}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;gap:10px;text-align:center}
-.emico{font-size:48px}.emti{font-size:19px;font-weight:600;letter-spacing:-.3px}.emsu{font-size:15px;color:var(--l2);line-height:1.5}
+.emico{display:flex;align-items:center;justify-content:center;width:56px;height:56px}.emti{font-size:19px;font-weight:600;letter-spacing:-.3px}.emsu{font-size:15px;color:var(--l2);line-height:1.5}
 @keyframes fsu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .ani{animation:fsu .28s ease both}
 .d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
@@ -262,7 +262,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .pipe-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 16px}
 .pg-cell{background:var(--bg2);border-radius:13px;padding:12px 10px 10px;box-shadow:var(--sh);text-align:center;cursor:pointer;transition:transform .1s}
 .pg-cell:active{transform:scale(.96)}
-.pg-ico{font-size:20px;margin-bottom:4px}
+.pg-ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin:0 auto 4px;color:var(--blue)}
 .pg-num{font-size:22px;font-weight:700;letter-spacing:-.4px;color:var(--label)}
 .pg-lbl{font-size:10px;color:var(--l2);font-weight:500;margin-top:2px;line-height:1.3}
 
@@ -347,7 +347,7 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       <div id="home-main">
         <!-- Greeting -->
         <div class="lgt ani" style="padding-bottom:4px;">
-          <h1 id="greet" style="font-size:24px;font-weight:700;">Good morning 👋</h1>
+          <h1 id="greet" style="font-size:24px;font-weight:700;">Good morning</h1>
           <div class="sub" id="gdate"></div>
         </div>
 
@@ -380,8 +380,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
           <span class="home-sec-title" id="home-list-label">All Leads</span>
           <div class="home-filter" id="hfseg">
             <button class="hf-btn on" onclick="setHF('all',this)">All</button>
-            <button class="hf-btn" onclick="setHF('hot',this)">🔥</button>
-            <button class="hf-btn" onclick="setHF('followup',this)">📅</button>
+            <button class="hf-btn" onclick="setHF('hot',this)">Hot</button>
+            <button class="hf-btn" onclick="setHF('followup',this)">Follow-up</button>
             <button class="hf-btn" onclick="setHF('new',this)">New</button>
           </div>
         </div>
@@ -394,13 +394,18 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
   <div id="sub-pipe" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
     <div class="st"></div>
     <div class="nav"><div style="width:44px"></div><div class="nav-t">Pipeline</div><div style="width:44px"></div></div>
-    <div class="seg" id="pseg" style="margin:10px 16px 0;">
-      <button class="sb on" data-stage="new" onclick="setPS('new',this)">New</button>
-      <button class="sb" data-stage="contacted" onclick="setPS('contacted',this)">Called</button>
-      <button class="sb" data-stage="qualified" onclick="setPS('qualified',this)">Qualified</button>
-      <button class="sb" data-stage="documents" onclick="setPS('documents',this)">Docs</button>
-      <button class="sb" data-stage="submitted" onclick="setPS('submitted',this)">Sent</button>
-    </div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;padding:10px 16px 0;scrollbar-width:none;" id="pseg-wrap">
+    <div style="display:flex;gap:6px;min-width:max-content;" id="pseg">
+      <button class="sb on" data-stage="new"        onclick="setPS('new',this)">New Lead</button>
+      <button class="sb"    data-stage="contacted"  onclick="setPS('contacted',this)">Contacted</button>
+      <button class="sb"    data-stage="interested" onclick="setPS('interested',this)">Interested</button>
+      <button class="sb"    data-stage="docs_req"   onclick="setPS('docs_req',this)">Docs Req.</button>
+      <button class="sb"    data-stage="docs_recv"  onclick="setPS('docs_recv',this)">Docs Recv.</button>
+      <button class="sb"    data-stage="submitted"  onclick="setPS('submitted',this)">At Bank</button>
+      <button class="sb"    data-stage="approved"   onclick="setPS('approved',this)">Approved</button>
+      <button class="sb"    data-stage="disbursed"  onclick="setPS('disbursed',this)">Disbursed</button>
+      <button class="sb"    data-stage="lost"       onclick="setPS('lost',this)">Lost</button>
+    </div></div>
     <div class="sc" id="pipeList"><div style="height:8px"></div></div>
   </div>
   <div id="sub-calls" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
@@ -498,8 +503,8 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       </div>
       <div class="fsec" style="margin-top:16px;"><div class="flbl">Pipeline</div>
         <div class="fgrp">
-          <div class="fr"><span class="flab">Stage</span><select id="f-stage"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="documents">Docs Pending</option><option value="submitted">Submitted</option><option value="converted">Converted ✅</option><option value="disqualified">Disqualified ❌</option></select></div>
-          <div class="fr"><span class="flab">Priority</span><select id="f-prio"><option value="hot">🔥 Hot</option><option value="warm">🌤 Warm</option><option value="cold">❄️ Cold</option></select></div>
+          <div class="fr"><span class="flab">Stage</span><select id="f-stage"><option value="new">New Lead</option><option value="contacted">Contacted</option><option value="interested">Interested</option><option value="docs_req">Docs Requested</option><option value="docs_recv">Docs Received</option><option value="submitted">Submitted to Bank</option><option value="approved">Approved</option><option value="disbursed">Disbursed</option><option value="lost">Lost</option></select></div>
+          <div class="fr"><span class="flab">Priority</span><select id="f-prio"><option value="hot">Hot</option><option value="warm">Warm</option><option value="cold">Cold</option></select></div>
           <div class="fr"><span class="flab">Source</span><select id="f-src"><option value="">Select…</option><option>Referral</option><option>WhatsApp</option><option>Google</option><option>Facebook</option><option>CA Partner</option><option>Real Estate Partner</option><option>Car Dealer</option><option>Cold Call</option><option>Walk-in</option></select></div>
         </div>
       </div>
@@ -523,14 +528,14 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       <!-- ── CALL OUTCOME ── -->
       <div style="padding:14px 16px 0;font-size:13px;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;font-weight:500;">Call Outcome</div>
       <div class="cgrid">
-        <button class="cbtn gn sel" onclick="pickCS('picked',this)"><span class="ico">✅</span>Picked</button>
-        <button class="cbtn rd" onclick="pickCS('rejected',this)"><span class="ico">❌</span>Rejected</button>
-        <button class="cbtn gr" onclick="pickCS('missed',this)"><span class="ico">📵</span>Missed</button>
-        <button class="cbtn og" onclick="pickCS('busy',this)"><span class="ico">🔄</span>Busy</button>
-        <button class="cbtn pu" onclick="pickCS('wrong',this)"><span class="ico">⚠️</span>Wrong No.</button>
-        <button class="cbtn bl" onclick="pickCS('callback',this)"><span class="ico">📅</span>Callback</button>
-        <button class="cbtn gr" onclick="pickCS('switched_off',this)"><span class="ico">📴</span>Off</button>
-        <button class="cbtn gr" onclick="pickCS('voicemail',this)"><span class="ico">📬</span>Voicemail</button>
+        <button class="cbtn gn sel" onclick="pickCS('picked',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg></span>Picked</button>
+        <button class="cbtn rd" onclick="pickCS('rejected',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Rejected</button>
+        <button class="cbtn gr" onclick="pickCS('missed',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A2 2 0 013.34 10h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L7.27 17.91a16 16 0 006 6"/><line x1="1" y1="1" x2="23" y2="23"/></svg></span>Missed</button>
+        <button class="cbtn og" onclick="pickCS('busy',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>Busy</button>
+        <button class="cbtn pu" onclick="pickCS('wrong',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>Wrong No.</button>
+        <button class="cbtn bl" onclick="pickCS('callback',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Callback</button>
+        <button class="cbtn gr" onclick="pickCS('switched_off',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/><path d="M5 12.55a10.94 10.94 0 015.17-2.39"/><path d="M10.71 5.05A16 16 0 0122.56 9"/><path d="M1.42 9a15.91 15.91 0 014.7-2.88"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></span>Off</button>
+        <button class="cbtn gr" onclick="pickCS('voicemail',this)"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>Voicemail</button>
       </div>
 
       <!-- ── CALL DETAILS ── -->
@@ -546,13 +551,13 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       </div>
       <!-- Action type chips — 2 col grid, compact -->
       <div class="at-grid" id="call-at-grid" style="padding:10px 16px 0;">
-        <button class="at-chip sel" onclick="pickCallAT('Call',this)">📞 Call</button>
-        <button class="at-chip" onclick="pickCallAT('Collect Documents',this)">📄 Collect Docs</button>
-        <button class="at-chip" onclick="pickCallAT('Send Details',this)">📤 Send Details</button>
-        <button class="at-chip" onclick="pickCallAT('Bank Follow-up',this)">🏦 Bank Follow-up</button>
-        <button class="at-chip" onclick="pickCallAT('Meeting',this)">🤝 Meeting</button>
-        <button class="at-chip" onclick="pickCallAT('Waiting for Customer',this)">⏳ Waiting</button>
-        <button class="at-chip" onclick="pickCallAT('Custom',this)">✏️ Custom</button>
+        <button class="at-chip sel" onclick="pickCallAT('Call',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</button>
+        <button class="at-chip" onclick="pickCallAT('Collect Documents',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Collect Docs</button>
+        <button class="at-chip" onclick="pickCallAT('Send Details',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Details</button>
+        <button class="at-chip" onclick="pickCallAT('Bank Follow-up',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> Bank Follow-up</button>
+        <button class="at-chip" onclick="pickCallAT('Meeting',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> Meeting</button>
+        <button class="at-chip" onclick="pickCallAT('Waiting for Customer',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Waiting</button>
+        <button class="at-chip" onclick="pickCallAT('Custom',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Custom</button>
       </div>
 
       <div class="fsec" style="margin-top:10px;"><div class="fgrp">
@@ -611,13 +616,13 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
       <!-- Action Type chips -->
       <div style="padding:14px 16px 4px;font-size:13px;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;font-weight:500;">Action Type</div>
       <div class="at-grid" id="at-grid">
-        <button class="at-chip" onclick="pickAT('Call',this)">📞 Call</button>
-        <button class="at-chip" onclick="pickAT('Collect Documents',this)">📄 Collect Documents</button>
-        <button class="at-chip" onclick="pickAT('Send Details',this)">📤 Send Details</button>
-        <button class="at-chip" onclick="pickAT('Bank Follow-up',this)">🏦 Bank Follow-up</button>
-        <button class="at-chip" onclick="pickAT('Meeting',this)">🤝 Meeting</button>
-        <button class="at-chip" onclick="pickAT('Waiting for Customer',this)">⏳ Waiting for Customer</button>
-        <button class="at-chip" onclick="pickAT('Custom',this)">✏️ Custom</button>
+        <button class="at-chip" onclick="pickAT('Call',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg> Call</button>
+        <button class="at-chip" onclick="pickAT('Collect Documents',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Collect Documents</button>
+        <button class="at-chip" onclick="pickAT('Send Details',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Send Details</button>
+        <button class="at-chip" onclick="pickAT('Bank Follow-up',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg> Bank Follow-up</button>
+        <button class="at-chip" onclick="pickAT('Meeting',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> Meeting</button>
+        <button class="at-chip" onclick="pickAT('Waiting for Customer',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Waiting for Customer</button>
+        <button class="at-chip" onclick="pickAT('Custom',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Custom</button>
       </div>
 
       <!-- Action Note -->
@@ -650,24 +655,57 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 // ═══════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════
-var SL={new:'New',contacted:'Contacted',qualified:'Qualified',documents:'Docs Pending',submitted:'Submitted',converted:'Converted',disqualified:'Disqualified'};
-var SC={new:'pb',contacted:'po',qualified:'pg',documents:'pp',submitted:'pt',converted:'pg',disqualified:'pr'};
-var SO=['new','contacted','qualified','documents','submitted','converted','disqualified'];
+// ─── PIPELINE STAGES ──────────────────────────────────────────────
+// 9 real-world loan-connector stages
+var SL={
+  'new':         'New Lead',
+  'contacted':   'Contacted',
+  'interested':  'Interested',
+  'docs_req':    'Docs Requested',
+  'docs_recv':   'Docs Received',
+  'submitted':   'Submitted to Bank',
+  'approved':    'Approved',
+  'disbursed':   'Disbursed',
+  'lost':        'Lost',
+  // ── legacy key aliases (so old sheet data still renders) ──
+  'qualified':   'Interested',
+  'documents':   'Docs Received',
+  'converted':   'Disbursed',
+  'disqualified':'Lost'
+};
+// Pill colour per stage key
+var SC={
+  'new':'pb','contacted':'po','interested':'pg',
+  'docs_req':'pp','docs_recv':'pt','submitted':'pb',
+  'approved':'pg','disbursed':'pg','lost':'pr',
+  // legacy
+  'qualified':'pg','documents':'pt','converted':'pg','disqualified':'pr'
+};
+// Canonical ordered list used for stage picker & progress bar
+var SO=['new','contacted','interested','docs_req','docs_recv','submitted','approved','disbursed','lost'];
+// Linear progress stages (excludes 'lost')
+var SP=['new','contacted','interested','docs_req','docs_recv','submitted','approved','disbursed'];
+// Legacy key → new canonical key (applied at load time)
+var LEGACY_STAGE={'qualified':'interested','documents':'docs_recv','converted':'disbursed','disqualified':'lost'};
 var DOCS=[{k:'pan',n:'PAN Card'},{k:'aadhaar',n:'Aadhaar Card'},{k:'salary',n:'Salary Slips (3 months)'},{k:'bank',n:'Bank Statement (6 months)'},{k:'itr',n:'ITR Last 2 Years'},{k:'photo',n:'Passport Photo'},{k:'form16',n:'Form 16'},{k:'biz',n:'Business Proof'}];
 var ABG=['#007AFF','#34C759','#FF9500','#AF52DE','#FF3B30','#5AC8FA','#FF2D55','#30D158'];
 var RATES={'Personal Loan':2,'Business Loan':2,'Home Loan':0.35,'LAP':0.5,'Car Loan':1,'Two-Wheeler Loan':1,'Education Loan':1};
-var SI={picked:'✅',rejected:'❌',missed:'📵',busy:'🔄',wrong:'⚠️',callback:'📅',switched_off:'📴',voicemail:'📬'};
+// Call outcome display labels (no emoji — used in calls list pill)
+var SI={
+  picked:'Picked',rejected:'Rejected',missed:'Missed',busy:'Busy',
+  wrong:'Wrong No.',callback:'Callback',switched_off:'Off',voicemail:'Voicemail'
+};
 var SC2={picked:'pg',rejected:'pr',missed:'po',busy:'po',wrong:'pp',callback:'pb',switched_off:'pgr',voicemail:'pgr'};
 
-// ─── NEXT ACTION TYPE icons ────────────────────────────────────────
+// Next action type icons — SVG strings (no emoji)
 var AT_ICO={
-  'Call':'📞',
-  'Collect Documents':'📄',
-  'Send Details':'📤',
-  'Bank Follow-up':'🏦',
-  'Meeting':'🤝',
-  'Waiting for Customer':'⏳',
-  'Custom':'✏️'
+  'Call':               '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>',
+  'Collect Documents':  '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  'Send Details':       '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+  'Bank Follow-up':     '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>',
+  'Meeting':            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',
+  'Waiting for Customer':'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+  'Custom':             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>'
 };
 
 // ═══════════════════════════════════════════════════════
@@ -814,7 +852,8 @@ function loadLeads(){
         if(typeof l.docs==='string'){try{l.docs=JSON.parse(l.docs);}catch(e){l.docs={};}}
         if(typeof l.act==='string'){try{l.act=JSON.parse(l.act);}catch(e){l.act=[];}}
 
-        // ── RESTORE NEXT ACTION ───────────────────────────────────
+        // ── MIGRATE LEGACY STAGE KEYS ──────────────────────────────
+        if(LEGACY_STAGE[l.stage]) l.stage = LEGACY_STAGE[l.stage];
         // Priority 1: real sheet columns (nextActionType/Note/DateTime)
         //   — populated once the new columns are added to the sheet
         // Priority 2: __na__ sentinel inside act[]
@@ -862,6 +901,16 @@ function loadCalls(){
       });
       renderCalls();
     }).catch(function(){});
+}
+
+// ─── HAPTIC FEEDBACK ──────────────────────────────────────────────
+function haptic(type){
+  if(!navigator||!navigator.vibrate) return;
+  if(type==='light')   navigator.vibrate(8);
+  else if(type==='medium')  navigator.vibrate(18);
+  else if(type==='heavy')   navigator.vibrate([30,10,30]);
+  else if(type==='success') navigator.vibrate([10,50,18]);
+  else navigator.vibrate(10);
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1035,10 +1084,9 @@ function naDisplayLabel(l){
   var type = l.nextActionType || '';
   var note = l.nextActionNote || '';
   if(type === 'Custom'){
-    // Show the note as the primary label; icon is ✏️
-    return {ico:'✏️', label: note || 'Custom action'};
+    return {ico: AT_ICO['Custom'], label: note || 'Custom action'};
   }
-  return {ico: AT_ICO[type]||'📋', label: type || 'Follow-up'};
+  return {ico: AT_ICO[type]||AT_ICO['Custom'], label: type || 'Follow-up'};
 }
 
 /**
@@ -1088,17 +1136,17 @@ function naDetailCard(l){
   if(status === 'none'){
     return '<div onclick="openFUOv()" style="display:flex;align-items:center;justify-content:space-between;padding:11px 16px;cursor:pointer;background:var(--fill2);border-radius:10px;">'
       +'<div style="display:flex;align-items:center;gap:8px;">'
-      +'<span style="font-size:15px;color:var(--l3);">⚪</span>'
+      +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/></svg>'
       +'<span style="font-size:14px;color:var(--l3);">No next action set</span>'
       +'</div>'
-      +'<div style="display:flex;align-items:center;gap:4px;color:var(--blue);font-size:13px;font-weight:600;">➕ Set'+chev+'</div>'
+      +'<div style="display:flex;align-items:center;gap:4px;color:var(--blue);font-size:13px;font-weight:600;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Set'+chev+'</div>'
       +'</div>';
   }
 
   // ── SET ───────────────────────────────────────────────────────────
   var dl = naDisplayLabel(l);
   var statusColors = {
-    overdue: {bg:'rgba(255,59,48,.09)',border:'rgba(255,59,48,.22)',label:'var(--red)',   tag:'🔴 OVERDUE'},
+    overdue: {bg:'rgba(255,59,48,.09)',border:'rgba(255,59,48,.22)',label:'var(--red)',   tag:'OVERDUE'},
     today:   {bg:'rgba(0,122,255,.07)', border:'rgba(0,122,255,.18)', label:'var(--blue)', tag:'TODAY'},
     future:  {bg:'rgba(52,199,89,.07)', border:'rgba(52,199,89,.18)', label:'var(--green)',tag:'UPCOMING'}
   };
@@ -1106,11 +1154,11 @@ function naDetailCard(l){
 
   // Overdue alert bar — only shown when status is overdue
   var overdueBar = status === 'overdue'
-    ? '<div class="det-overdue-bar"><span>🔴 Follow-up overdue — action required</span></div>'
+    ? '<div class="det-overdue-bar"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Follow-up overdue — action required</span></div>'
     : '';
 
   var actionRow = '<div onclick="openFUOv()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;background:'+sc.bg+';border:1px solid '+sc.border+';border-radius:10px;">'
-    +'<span style="font-size:18px;flex-shrink:0;">'+dl.ico+'</span>'
+    +'<span style="display:flex;align-items:center;flex-shrink:0;opacity:.8;">'+dl.ico+'</span>'
     +'<div style="flex:1;min-width:0;">'
     +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:'+sc.label+';margin-bottom:1px;">'+sc.tag+'</div>'
     +'<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+dl.label+'</div>'
@@ -1131,7 +1179,7 @@ function naMini(l){
 
   if(status === 'none'){
     return '<div style="display:flex;align-items:center;gap:5px;margin-top:4px;">'
-      +'<span style="font-size:12px;color:var(--l3);">⚪</span>'
+      +'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="2.5" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/></svg>'
       +'<span style="font-size:12px;color:var(--l3);">No next action</span>'
       +'</div>';
   }
@@ -1143,7 +1191,7 @@ function naMini(l){
   var cls = 'na-mini-row'+(status==='overdue'?' nm-overdue':status==='today'?' nm-today':'');
 
   return '<div class="'+cls+'">'
-    +'<span style="font-size:13px;flex-shrink:0;">'+dl.ico+'</span>'
+    +'<span style="display:flex;align-items:center;flex-shrink:0;opacity:.7;">'+dl.ico+'</span>'
     +'<span class="nm-txt">'+label+'</span>'
     +'</div>';
 }
@@ -1155,7 +1203,7 @@ function initApp(){
   fuDateSel=todayStr();
   var h=new Date().getHours();
   var greeting = h<12 ? 'Good morning' : h<17 ? 'Good afternoon' : 'Good evening';
-  el('greet').textContent = greeting+', '+(me.name||me.id).split(' ')[0]+'! 👋';
+  el('greet').textContent = greeting+', '+(me.name||me.id).split(' ')[0]+'!';
   el('gdate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
   el('hnt').textContent=me.role==='admin'?'CredNest CRM':(me.name||me.id).split(' ')[0]+"'s Leads";
   renderAll();goTab('home');
@@ -1174,7 +1222,7 @@ function renderAll(){renderHome();renderPipe();renderCalls();}
 function workLeads(){
   // Returns the prioritised work queue: overdue → today → no-action → future
   var active = leads.filter(function(l){
-    return l.stage!=='converted' && l.stage!=='disqualified';
+    return l.stage!=='disbursed' && l.stage!=='lost';
   });
   var overdue  = active.filter(function(l){ return naStatus(l)==='overdue'; });
   var todayFU  = active.filter(function(l){ return naStatus(l)==='today'; });
@@ -1189,7 +1237,7 @@ function workLeads(){
 
 function renderTodaysWork(){
   var active = leads.filter(function(l){
-    return l.stage!=='converted' && l.stage!=='disqualified';
+    return l.stage!=='disbursed' && l.stage!=='lost';
   });
   var nOverdue  = active.filter(function(l){ return naStatus(l)==='overdue'; }).length;
   var nToday    = active.filter(function(l){ return naStatus(l)==='today'; }).length;
@@ -1206,18 +1254,18 @@ function renderTodaysWork(){
 
   if(nOverdue > 0){
     html += '<div class="tw-row" onclick="startWorkFrom(\'overdue\')">'
-      +'<span class="tw-ico">🔴</span>'
+      +'<span class="tw-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="var(--red)" stroke="none"><circle cx="12" cy="12" r="10"/></svg></span>'
       +'<span class="tw-lbl">Overdue follow-ups</span>'
       +'<span class="tw-num n-red">'+nOverdue+'</span>'+chev+'</div>';
   }
 
   html += '<div class="tw-row" onclick="startWorkFrom(\'today\')">'
-    +'<span class="tw-ico">📅</span>'
+    +'<span class="tw-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>'
     +'<span class="tw-lbl">Follow-ups today</span>'
     +'<span class="tw-num '+(nToday>0?'n-blue':'n-grey')+'">'+nToday+'</span>'+chev+'</div>';
 
   html += '<div class="tw-row" onclick="startWorkFrom(\'none\')">'
-    +'<span class="tw-ico">⚪</span>'
+    +'<span class="tw-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></span>'
     +'<span class="tw-lbl">No next action set</span>'
     +'<span class="tw-num n-grey">'+nNoAction+'</span>'+chev+'</div>';
 
@@ -1258,18 +1306,33 @@ function goToPipeStage(key){
 
 function renderPipelineGrid(){
   var g = el('pipe-grid'); if(!g) return;
+  var S = {
+    new:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+    contacted:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg>',
+    interested:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+    docs_req:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>',
+    docs_recv:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><polyline points="9 15 11 17 15 13"/></svg>',
+    submitted:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>',
+    approved:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+    disbursed:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+    lost:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+  };
   var stages = [
-    {key:'new',       ico:'🆕', lbl:'New'},
-    {key:'contacted', ico:'📞', lbl:'Contacted'},
-    {key:'qualified', ico:'💡', lbl:'Interested'},
-    {key:'documents', ico:'📄', lbl:'Docs Pending'},
-    {key:'submitted', ico:'🏦', lbl:'At Bank'},
-    {key:'converted', ico:'🎉', lbl:'Approved'}
+    {key:'new',        lbl:'New Lead'},
+    {key:'contacted',  lbl:'Contacted'},
+    {key:'interested', lbl:'Interested'},
+    {key:'docs_req',   lbl:'Docs Req.'},
+    {key:'docs_recv',  lbl:'Docs Recv.'},
+    {key:'submitted',  lbl:'At Bank'},
+    {key:'approved',   lbl:'Approved'},
+    {key:'disbursed',  lbl:'Disbursed'},
+    {key:'lost',       lbl:'Lost'}
   ];
+  // Pipe-grid is 3-col so wrap gracefully
   g.innerHTML = stages.map(function(s){
     var cnt = leads.filter(function(l){ return l.stage===s.key; }).length;
     return '<div class="pg-cell" onclick="goToPipeStage(\''+s.key+'\')">'+
-      '<div class="pg-ico">'+s.ico+'</div>'+
+      '<div class="pg-ico">'+S[s.key]+'</div>'+
       '<div class="pg-num">'+(cnt||'0')+'</div>'+
       '<div class="pg-lbl">'+s.lbl+'</div>'+
       '</div>';
@@ -1293,7 +1356,7 @@ function startWork(){
 function startWorkFrom(filter){
   // Start work filtered to a specific bucket
   var active = leads.filter(function(l){
-    return l.stage!=='converted' && l.stage!=='disqualified';
+    return l.stage!=='disbursed' && l.stage!=='lost';
   });
   var byPrio = function(a,b){
     return ({hot:0,warm:1,cold:2}[a.prio]||1) - ({hot:0,warm:1,cold:2}[b.prio]||1);
@@ -1387,6 +1450,7 @@ function renderWorkLead(){
 }
 
 function workNext(){
+  haptic('light');
   wmIndex++;
   renderWorkLead();
 }
@@ -1425,7 +1489,7 @@ function renderHomeList(){
     });
   }
   else if(hf==='new') ml = ml.filter(function(l){ return l.stage==='new'; });
-  if(hf!=='followup') ml = ml.filter(function(l){ return l.stage!=='converted' && l.stage!=='disqualified'; });
+  if(hf!=='followup') ml = ml.filter(function(l){ return l.stage!=='disbursed' && l.stage!=='lost'; });
 
   // Sort overdue first → today → future → none → then by priority
   var statusRank = {overdue:0, today:1, future:2, none:3};
@@ -1441,21 +1505,21 @@ function renderHomeList(){
   });
 
   // Label
-  var labelMap = {all:'All Leads', hot:'🔥 Hot Leads', followup:'📅 Follow-ups', new:'New Leads'};
+  var labelMap = {all:'All Leads', hot:'Hot Leads', followup:'Follow-ups', new:'New Leads'};
   var lblEl = el('home-list-label');
   if(lblEl) lblEl.textContent = labelMap[hf] || 'All Leads';
 
   var emsg = hf==='followup' ? 'No follow-ups for this date' : 'No leads here';
   var esub = hf==='followup' ? 'Select a different date above' : 'Tap + to add your first lead';
   el('homeList').innerHTML = ml.length === 0
-    ? '<div class="empty"><div class="emico">'+(hf==='followup'?'📅':'📋')+'</div><div class="emti">'+emsg+'</div><div class="emsu">'+esub+'</div></div>'
+    ? '<div class="empty"><div class="emico">'+(hf==='followup'?'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>':'<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>')+'</div><div class="emti">'+emsg+'</div><div class="emsu">'+esub+'</div></div>'
     : ml.map(lcard).join('') + '<div style="height:8px"></div>';
 }
 
 function lcard(l){
   var phone=(l.phone||'').replace(/\s/g,'');
   var wap=phone.replace(/[^0-9]/g,'');
-  var wamsg=encodeURIComponent('Hi '+l.name+'! Following up on your '+(l.ltype||'loan')+' enquiry. When\'s a good time to connect? 🙏');
+  var wamsg=encodeURIComponent('Hi '+l.name+'! Following up on your '+(l.ltype||'loan')+' enquiry. When\'s a good time to connect?');
   var status = naStatus(l);
   var isOverdue = status === 'overdue';
 
@@ -1468,12 +1532,13 @@ function lcard(l){
         '<div class="lm">'+fmt(l.amount)+(l.cibil?' · CIBIL '+l.cibil:'')+'</div>'+
         '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center;">'+
           '<span class="pill '+(SC[l.stage]||'pgr')+'">'+(SL[l.stage]||l.stage)+'</span>'+
-          '<span class="pill '+(l.prio==='hot'?'pr':l.prio==='warm'?'po':'pgr')+'">'+(l.prio==='hot'?'🔥':l.prio==='warm'?'🌤':'❄️')+' '+(l.prio||'')+'</span>'+
-          (l.nextfu&&!l.nextActionDateTime?'<span class="fu-badge '+fuBadgeClass(l.nextfu)+'">📅 '+fmtFU(l.nextfu)+'</span>':'')+
+          '<span class="pill '+(l.prio==='hot'?'pr':l.prio==='warm'?'po':'pgr')+'">'+
+            (l.prio==='hot'?'Hot':l.prio==='warm'?'Warm':'Cold')+'</span>'+
+          (l.nextfu&&!l.nextActionDateTime?'<span class="fu-badge '+fuBadgeClass(l.nextfu)+'">'+fmtFU(l.nextfu)+'</span>':'')+
         '</div>'+
         // Overdue banner row — shown only when overdue
         (isOverdue
-          ? '<div class="overdue-row"><span>🔴 Follow-up overdue</span></div>'
+          ? '<div class="overdue-row"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--red)" stroke="none"><circle cx="12" cy="12" r="10"/></svg><span>Follow-up overdue</span></div>'
           : '')+
         // Next action mini row (always shown)
         naMini(l)+
@@ -1504,8 +1569,9 @@ var pendingCallId = null;
 
 function logCallTap(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
+  haptic('medium');
   var n=new Date().toISOString();
-  l.act=l.act||[];l.act.push({t:'call',tx:'📞 Call placed',ts:n});
+  l.act=l.act||[];l.act.push({t:'call',tx:'Call placed',ts:n});
   l.updated=n;save();
   // Store id so we open the result sheet on return
   pendingCallId = id;
@@ -1530,7 +1596,7 @@ window.addEventListener('pageshow', function(){
 });
 function logWA(id){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
-  var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'wa',tx:'💬 WhatsApp opened',ts:n});l.updated=n;save();
+  var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'wa',tx:'WhatsApp opened',ts:n});l.updated=n;save();
 }
 function setPS(s,e){
   ps=s;
@@ -1541,20 +1607,20 @@ function setPS(s,e){
 function renderPipe(){
   var ml=leads.filter(function(l){return l.stage===ps;});
   el('pipeList').innerHTML=ml.length===0
-    ?'<div class="empty"><div class="emico">✨</div><div class="emti">All clear!</div><div class="emsu">No leads in this stage</div></div>'
+    ?'<div class="empty"><div class="emico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="emti">All clear!</div><div class="emsu">No leads in this stage</div></div>'
     :ml.map(lcard).join('')+'<div style="height:90px"></div>';
 }
 function renderCalls(){
   var mc=calls.slice().reverse();
   var csel=el('callsList');if(!csel)return;
-  if(mc.length===0){csel.innerHTML='<div class="empty"><div class="emico">📞</div><div class="emti">No calls yet</div><div class="emsu">Tap Call on any lead</div></div>';return;}
+  if(mc.length===0){csel.innerHTML='<div class="empty"><div class="emico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 014.69 13a19.5 19.5 0 01-5.07-8.67A2 2 0 011.64 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L6.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z"/></svg></div><div class="emti">No calls yet</div><div class="emsu">Tap Call Now on any lead</div></div>';return;}
   csel.innerHTML=mc.map(function(c){
     var l=leads.find(function(x){return x.id===c.lid;})||{name:'Unknown',phone:'—'};
     return '<div class="lst" style="margin:0 16px 10px;" onclick="openDet(\''+c.lid+'\')">'+
       '<div class="row">'+
         '<div class="av" style="background:'+abg(l.name)+';width:38px;height:38px;font-size:13px;">'+ini(l.name)+'</div>'+
         '<div class="rb"><div class="rt">'+l.name+'</div><div class="rs">'+(l.phone||'—')+'</div></div>'+
-        '<span class="pill '+(SC2[c.status]||'pgr')+'">'+(SI[c.status]||'📞')+' '+(c.status||'').replace('_',' ')+'</span>'+
+        '<span class="pill '+(SC2[c.status]||'pgr')+'">'+(SI[c.status]||'—')+' '+(c.status||'').replace('_',' ')+'</span>'+
       '</div>'+
       (c.note?'<div style="padding:8px 16px 10px;font-size:13px;color:var(--l2);border-top:.5px solid var(--sep2);">'+c.note+'</div>':'')+
       '<div style="padding:6px 16px 10px;font-size:12px;color:var(--l3);border-top:.5px solid var(--sep2);">'+fmtT(c.ts)+(c.dur?' · '+c.dur:'')+'</div>'+
@@ -1563,26 +1629,26 @@ function renderCalls(){
 }
 function renderProf(){
   if(!me)return;
-  var ml=leads,conv=ml.filter(function(l){return l.stage==='converted';});
+  var ml=leads,conv=ml.filter(function(l){return l.stage==='disbursed';});
   var earned=conv.reduce(function(s,l){return s+comm(l);},0);
   el('profContent').innerHTML=
     '<div class="phdr">'+
       '<div class="pav" style="background:'+(me.color||'#007AFF')+'">'+ini(me.name||me.id)+'</div>'+
       '<div style="font-size:22px;font-weight:700;letter-spacing:-.4px;">'+(me.name||me.id)+'</div>'+
-      '<div style="font-size:15px;color:var(--l2);margin-top:3px;">'+(me.role==='admin'?'👑 Admin':'Partner')+'</div>'+
+      '<div style="font-size:15px;color:var(--l2);margin-top:3px;">'+(me.role==='admin'?'Admin':'Partner')+'</div>'+
     '</div>'+
     '<div class="stats" style="margin-bottom:4px;">'+
       '<div class="tile blue"><div class="tv">'+ml.length+'</div><div class="tl">My Leads</div></div>'+
-      '<div class="tile green"><div class="tv">'+conv.length+'</div><div class="tl">Converted</div></div>'+
+      '<div class="tile green"><div class="tv">'+conv.length+'</div><div class="tl">Disbursed</div></div>'+
       '<div class="tile orange"><div class="tv">'+fmt(earned)+'</div><div class="tl">Earned</div></div>'+
       '<div class="tile red"><div class="tv">'+ml.filter(function(l){return l.prio==='hot';}).length+'</div><div class="tl">Hot Leads</div></div>'+
     '</div>'+
     '<div class="sec"><div class="sh">Data</div><div class="lst">'+
-      '<div class="row" onclick="loadLeads();loadCalls();"><div class="ri" style="background:var(--bl);">🔄</div><div class="rb"><div class="rt">Refresh from Sheets</div><div class="rs">'+(lastSync?'Last sync: '+fmtT(lastSync.toISOString()):'Not synced yet')+'</div></div><svg class="cv" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'+
-      '<div class="row" onclick="exportCSV()"><div class="ri" style="background:var(--pl);">💾</div><div class="rb"><div class="rt">Download CSV</div><div class="rs">Save to device</div></div><svg class="cv" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'+
+      '<div class="row" onclick="loadLeads();loadCalls();"><div class="ri" style="background:var(--bl);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></div><div class="rb"><div class="rt">Refresh from Sheets</div><div class="rs">'+(lastSync?'Last sync: '+fmtT(lastSync.toISOString()):'Not synced yet')+'</div></div><svg class="cv" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'+
+      '<div class="row" onclick="exportCSV()"><div class="ri" style="background:var(--pl);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="rb"><div class="rt">Download CSV</div><div class="rs">Save to device</div></div><svg class="cv" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>'+
     '</div></div>'+
     '<div class="sec" style="margin-top:16px;"><div class="lst">'+
-      '<div class="row" onclick="doLogout()"><div class="ri" style="background:var(--rl);">🚪</div><div class="rb"><div class="rt" style="color:var(--red)">Sign Out</div></div></div>'+
+      '<div class="row" onclick="doLogout()"><div class="ri" style="background:var(--rl);"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div><div class="rb"><div class="rt" style="color:var(--red)">Sign Out</div></div></div>'+
     '</div></div><div style="height:90px"></div>';
 }
 
@@ -1613,7 +1679,9 @@ function fuBlock(l){
 function buildDetHTML(l){
   var e=elig(l),ec=e>=75?'ehi':e>=50?'eme':'elo';
   var elbl=e>=75?'High — Likely Eligible':e>=50?'Medium — Needs Review':'Low — High Risk';
-  var stgs=['new','contacted','qualified','documents','submitted','converted'],si=stgs.indexOf(l.stage);
+  // Progress bar uses SP (linear journey, excludes 'lost')
+  var stgs=SP; // ['new','contacted','interested','docs_req','docs_recv','submitted','approved','disbursed']
+  var si=stgs.indexOf(l.stage);
   var sdots=stgs.map(function(s,i){return'<div class="spd '+(i<si?'dn':s===l.stage?'cr':'')+'"></div>';}).join('');
   var docs=l.docs||{};
   var dhtml=DOCS.map(function(d){
@@ -1631,7 +1699,7 @@ function buildDetHTML(l){
   var nhtml=notes.length===0?'<div style="padding:12px 16px;font-size:14px;color:var(--l3);">No notes yet</div>'
     :notes.map(function(n){return'<div style="padding:12px 16px;border-bottom:.5px solid var(--sep2);"><div style="font-size:15px;line-height:1.5;">'+n.tx+'</div><div style="font-size:12px;color:var(--l3);margin-top:3px;">'+fmtT(n.ts)+'</div></div>';}).join('');
   var phone=(l.phone||'').replace(/\s/g,''),wap=phone.replace(/[^0-9]/g,'');
-  var wamsg=encodeURIComponent('Hi '+l.name+'! Following up on your '+(l.ltype||'loan')+' enquiry. 🙏');
+  var wamsg=encodeURIComponent('Hi '+l.name+'! Following up on your '+(l.ltype||'loan')+' enquiry.');
   var cc=l.cibil>=750?'var(--green)':l.cibil>=700?'var(--orange)':'var(--red)';
 
   return (
@@ -1642,7 +1710,8 @@ function buildDetHTML(l){
       '<div style="font-size:14px;color:var(--l2);margin-top:2px;">'+(l.ltype||'—')+' · '+fmt(l.amount)+'</div>'+
       '<div style="display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;">'+
         '<span class="pill '+(SC[l.stage]||'pgr')+'">'+(SL[l.stage]||l.stage)+'</span>'+
-        '<span class="pill '+(l.prio==='hot'?'pr':l.prio==='warm'?'po':'pgr')+'">'+(l.prio==='hot'?'🔥':l.prio==='warm'?'🌤':'❄️')+' '+(l.prio||'')+'</span>'+
+        '<span class="pill '+(l.prio==='hot'?'pr':l.prio==='warm'?'po':'pgr')+'">'+
+          (l.prio==='hot'?'Hot':l.prio==='warm'?'Warm':'Cold')+'</span>'+
       '</div></div>'+
     '</div>'+
 
@@ -1664,16 +1733,16 @@ function buildDetHTML(l){
 
     // ── Quick actions ────────────────────────────────────────────
     '<div class="qastrip">'+
-      '<button class="qab" onclick="openNoteOv()"><div class="qaico" style="background:var(--bl);">📝</div><span class="qalbl">Note</span></button>'+
-      '<button class="qab" onclick="openStageOv()"><div class="qaico" style="background:var(--ol);">📍</div><span class="qalbl">Stage</span></button>'+
-      '<button class="qab" onclick="openFUOv()"><div class="qaico" style="background:var(--pl);">📅</div><span class="qalbl">Next Action</span></button>'+
+      '<button class="qab" onclick="openNoteOv()"><div class="qaico" style="background:var(--bl);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><span class="qalbl">Note</span></button>'+
+      '<button class="qab" onclick="openStageOv()"><div class="qaico" style="background:var(--ol);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B86800" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><span class="qalbl">Stage</span></button>'+
+      '<button class="qab" onclick="openFUOv()"><div class="qaico" style="background:var(--pl);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><span class="qalbl">Next Action</span></button>'+
     '</div>'+
 
     // ── Progress bar ─────────────────────────────────────────────
     '<div style="background:var(--bg2);margin:14px 16px 0;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;">'+
       '<div style="padding:12px 16px 4px;font-size:12px;font-weight:600;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;">Progress</div>'+
       '<div class="spr">'+sdots+'</div>'+
-      '<div class="spls"><span>New</span><span>Called</span><span>Qualified</span><span>Docs</span><span>Submitted</span><span>Done</span></div>'+
+      '<div class="spls"><span>New</span><span>Called</span><span>Interest</span><span>Docs Req</span><span>Docs Recv</span><span>Bank</span><span>Approved</span><span>Disbursed</span></div>'+
     '</div>'+
 
     '<div class="sec"><div class="sh">Details</div><div class="lst">'+
@@ -1720,6 +1789,7 @@ function openStageOv(){
 }
 function mvStage(s){
   var l=leads.find(function(x){return x.id===activeId;});if(!l)return;
+  haptic('medium');
   var n=new Date().toISOString();l.stage=s;l.updated=n;l.act=l.act||[];l.act.push({t:'stage',tx:'Stage → '+SL[s],ts:n});
   save();clov('ov-stage');renderDet(l);renderAll();toast('Moved to '+SL[s]);
 }
@@ -1787,8 +1857,8 @@ function saveCall(){
   saveSingleCall(c);
 
   // Activity log
-  var slbl={picked:'📞 Call picked',rejected:'❌ Rejected',missed:'📵 Missed',busy:'🔄 Busy',
-    wrong:'⚠️ Wrong number',callback:'📅 Callback',switched_off:'📴 Off',voicemail:'📬 Voicemail'};
+  var slbl={picked:'Call picked',rejected:'Rejected',missed:'Missed',busy:'Busy',
+    wrong:'Wrong number',callback:'Callback',switched_off:'Switched off',voicemail:'Voicemail'};
   l.act=l.act||[];
   l.act.push({t:'call',tx:(slbl[cs]||'Call')+(note?' — '+note.slice(0,50):''),ts:n});
 
@@ -1804,14 +1874,15 @@ function saveCall(){
     l.nextActionNote     = naNote;
     l.nextActionDateTime = fuISO;
     l.nextfu             = fuISO;
-    var naIco = (csNaType==='Custom') ? '✏️' : (AT_ICO[csNaType]||'📅');
-    l.act.push({t:'fu', tx: naIco+' Next: '+
+    var naIco = '';
+    l.act.push({t:'fu', tx: 'Next: '+
       (csNaType==='Custom' ? (naNote||'Custom action') : csNaType)+
       (csNaType!=='Custom'&&naNote?' — '+naNote.slice(0,30):'')+
       ' · '+fmtNA(fuISO), ts:n});
   }
 
   save();
+  haptic('success');
   clov('ov-call');
   if(el('ov-det').classList.contains('on')) renderDet(l);
   // If work mode is active, refresh current lead and advance automatically
@@ -1863,7 +1934,7 @@ function saveLead(){
     leads.push(Object.assign({},d,{id:uid(),owner:me.id,docs:{},act:[{t:'created',tx:'Lead created by '+(me?me.name:''),ts:n}],created:n,updated:n}));
     toast('Lead added!');
   }
-  save();clov('ov-lead');renderAll();
+  save();haptic('success');clov('ov-lead');renderAll();
   if(editId&&el('ov-det').classList.contains('on')){var l2=leads.find(function(x){return x.id===editId;});if(l2)renderDet(l2);}
 }
 function delLead(id){
@@ -1874,7 +1945,7 @@ function togDoc(id,k){
   var l=leads.find(function(x){return x.id===id;});if(!l)return;
   l.docs=l.docs||{};l.docs[k]=!l.docs[k];
   var dn='';for(var i=0;i<DOCS.length;i++){if(DOCS[i].k===k){dn=DOCS[i].n;break;}}
-  var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'doc',tx:(l.docs[k]?'✅ Got ':'❌ Removed ')+dn,ts:n});
+  var n=new Date().toISOString();l.act=l.act||[];l.act.push({t:'doc',tx:(l.docs[k]?'Received: ':'Removed: ')+dn,ts:n});
   l.updated=n;save();renderDet(l);
 }
 
@@ -2046,14 +2117,14 @@ function saveFU(){
   l.nextfu             = iso;  // keep legacy in sync
 
   l.act = l.act||[];
-  var ico = (l.nextActionType==='Custom') ? '✏️' : (AT_ICO[l.nextActionType]||'📅');
-  l.act.push({t:'fu', tx: ico+' Next Action: '+
+  l.act.push({t:'fu', tx: 'Next Action: '+
     (l.nextActionType==='Custom' ? (note||'Custom action') : l.nextActionType)+
     (l.nextActionType!=='Custom'&&note?' — '+note.slice(0,40):'')+
     ' · '+fmtNA(iso), ts:n});
   l.updated = n;
 
   save();
+  haptic('light');
   clov('ov-fu');
   if(el('ov-det').classList.contains('on')) renderDet(l);
   renderAll();
@@ -2071,7 +2142,7 @@ function clearFU(){
   // Also clear legacy
   delete l.nextfu;
 
-  l.act=l.act||[];l.act.push({t:'fu',tx:'📅 Next action removed',ts:n});
+  l.act=l.act||[];l.act.push({t:'fu',tx:'Next action removed',ts:n});
   l.updated=n;
 
   save();clov('ov-fu');
@@ -2097,7 +2168,7 @@ function closeSearch(){
 function renderSearch(){
   var q=(el('srch-inp').value||'').trim().toLowerCase();
   var res=el('srch-results');
-  if(!q){res.innerHTML='<div class="empty"><div class="emico">🔍</div><div class="emti">Start typing</div><div class="emsu">Search by name, phone, city or loan type</div></div>';return;}
+  if(!q){res.innerHTML='<div class="empty"><div class="emico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div class="emti">Start typing</div><div class="emsu">Search by name, phone, city or loan type</div></div>';return;}
   var ml=leads.filter(function(l){
     return (l.name||'').toLowerCase().indexOf(q)>-1
       ||(l.phone||'').toLowerCase().indexOf(q)>-1
@@ -2106,7 +2177,7 @@ function renderSearch(){
       ||(l.notes||'').toLowerCase().indexOf(q)>-1;
   });
   res.innerHTML=ml.length===0
-    ?'<div class="empty"><div class="emico">😕</div><div class="emti">No results for "'+q+'"</div><div class="emsu">Try a different name or number</div></div>'
+    ?'<div class="empty"><div class="emico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--l3)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div><div class="emti">No results for "'+q+'"</div><div class="emsu">Try a different name or number</div></div>'
     :'<div style="padding:6px 20px 2px;font-size:13px;color:var(--l2);">'+ml.length+' result'+(ml.length===1?'':'s')+'</div>'
       +ml.map(lcard).join('')+'<div style="height:8px"></div>';
 }
