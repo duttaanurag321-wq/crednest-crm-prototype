@@ -589,14 +589,16 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 </div>
 
 <div class="ov" id="ov-stage">
-  <div class="sheet" style="max-height:62vh;">
+  <div class="sheet" style="max-height:82vh;">
     <div class="shdl"></div>
     <div class="shhd">
       <button class="nb" onclick="clov('ov-stage')">Cancel</button>
       <div class="shti">Move Stage</div>
       <div style="width:60px"></div>
     </div>
-    <div style="padding:16px 16px 32px;"><div class="lst" id="stageList"></div></div>
+    <div class="shbd" style="padding-bottom:env(safe-area-inset-bottom,20px);">
+      <div style="padding:8px 16px 24px;"><div class="lst" id="stageList"></div></div>
+    </div>
   </div>
 </div>
 
@@ -903,14 +905,58 @@ function loadCalls(){
     }).catch(function(){});
 }
 
-// ─── HAPTIC FEEDBACK ──────────────────────────────────────────────
+// ─── HAPTIC FEEDBACK (iOS Safari compatible) ─────────────────────
+// navigator.vibrate is blocked on iOS. We use AudioContext clicks
+// which trigger the Taptic Engine on iPhone via sound feedback.
+// A silent AudioContext is initialised on first user interaction.
+var _hapticCtx = null;
+function _initHapticCtx(){
+  if(_hapticCtx) return;
+  try{ _hapticCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+}
+// Initialise on first touch so AudioContext is allowed
+document.addEventListener('touchstart', _initHapticCtx, {once:true, passive:true});
+document.addEventListener('click',      _initHapticCtx, {once:true, passive:true});
+
 function haptic(type){
-  if(!navigator||!navigator.vibrate) return;
-  if(type==='light')   navigator.vibrate(8);
-  else if(type==='medium')  navigator.vibrate(18);
-  else if(type==='heavy')   navigator.vibrate([30,10,30]);
-  else if(type==='success') navigator.vibrate([10,50,18]);
-  else navigator.vibrate(10);
+  // Android vibration (works on Chrome Android)
+  if(navigator.vibrate){
+    if(type==='light')        navigator.vibrate(8);
+    else if(type==='medium')  navigator.vibrate(18);
+    else if(type==='heavy')   navigator.vibrate([30,10,30]);
+    else if(type==='success') navigator.vibrate([10,50,18]);
+    else                      navigator.vibrate(10);
+  }
+  // iOS AudioContext click — triggers Taptic Engine
+  _initHapticCtx();
+  if(!_hapticCtx) return;
+  try{
+    var cfg = {
+      light:   {freq:1200, dur:0.012, gain:0.18},
+      medium:  {freq:900,  dur:0.018, gain:0.28},
+      heavy:   {freq:600,  dur:0.028, gain:0.38},
+      success: {freq:1400, dur:0.010, gain:0.15}
+    }[type] || {freq:1000, dur:0.015, gain:0.22};
+
+    var buf = _hapticCtx.createBuffer(1, Math.ceil(_hapticCtx.sampleRate * cfg.dur), _hapticCtx.sampleRate);
+    var data = buf.getChannelData(0);
+    for(var i=0;i<data.length;i++){
+      // exponentially decaying click waveform
+      data[i] = (Math.random()*2-1) * Math.exp(-i / (data.length * 0.3));
+    }
+    var src  = _hapticCtx.createBufferSource();
+    var gain = _hapticCtx.createGain();
+    src.buffer = buf;
+    gain.gain.value = cfg.gain;
+    src.connect(gain);
+    gain.connect(_hapticCtx.destination);
+    src.start();
+
+    // For 'success' type: play a second softer click 80ms later
+    if(type==='success'){
+      setTimeout(function(){ haptic('light'); }, 80);
+    }
+  }catch(e){}
 }
 
 // ═══════════════════════════════════════════════════════
