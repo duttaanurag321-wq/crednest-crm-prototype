@@ -104,11 +104,17 @@ body{font-family:var(--f);background:var(--bg);color:var(--label);font-size:17px
 .tlc{flex:1;padding-bottom:4px}
 .tlt{font-size:15px;line-height:1.4}
 .tlm{font-size:12px;color:var(--l3);margin-top:2px}
-.spr{display:flex;gap:4px;padding:12px 16px 4px}
-.spd{flex:1;height:4px;border-radius:2px;background:var(--sep)}
+.spr{display:flex;align-items:center;padding:10px 16px 6px;gap:0}
+.spd{flex:1;height:3px;background:var(--sep);position:relative}
+.spd:first-child{border-radius:2px 0 0 2px}.spd:last-child{border-radius:0 2px 2px 0}
 .spd.dn{background:var(--green)}.spd.cr{background:var(--blue)}
-.spls{display:flex;justify-content:space-between;padding:4px 16px 12px;overflow:hidden}
-.spl{font-size:9px;color:var(--l3);font-weight:500}
+/* Stage dot above each segment join */
+.spd-dot{width:8px;height:8px;border-radius:50%;background:var(--sep);flex-shrink:0;margin:0 -1px;z-index:1}
+.spd-dot.dn{background:var(--green)}.spd-dot.cr{background:var(--blue);box-shadow:0 0 0 3px rgba(0,122,255,.18)}
+/* Current stage label row */
+.sp-cur{display:flex;align-items:center;justify-content:space-between;padding:2px 16px 12px}
+.sp-cur-lbl{font-size:13px;font-weight:600;color:var(--blue)}
+.sp-cur-step{font-size:12px;color:var(--l3)}
 .etr{height:8px;background:var(--fill);border-radius:4px;overflow:hidden}
 .ef{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
 .ehi{background:linear-gradient(90deg,#34C759,#30D158)}.eme{background:linear-gradient(90deg,#FF9500,#FFCC00)}.elo{background:linear-gradient(90deg,#FF3B30,#FF6961)}
@@ -1430,36 +1436,40 @@ function renderWorkLead(){
   // Re-check each remaining lead in the queue — skip ones already actioned
   while(wmIndex < wmQueue.length){
     var candidate = wmQueue[wmIndex];
-    // Re-fetch latest version of the lead from the live array
     var live = leads.find(function(x){ return x.id === candidate.id; });
-    if(!live){ wmIndex++; continue; }  // lead deleted
+    if(!live){ wmIndex++; continue; }
     var st = naStatus(live);
-    // If this lead was in the queue because it was overdue/today/none,
-    // and it now has a future action set, it's been handled — skip it.
-    if(st === 'future'){
-      // Only skip if it was a "none" lead originally (had no action before)
-      // For overdue/today leads that got rescheduled, also skip
-      wmIndex++;
-      continue;
-    }
-    break; // this lead still needs attention
+    if(st === 'future'){ wmIndex++; continue; }
+    break;
   }
 
-  var total = wmQueue.length;
+  // Count leads that still need action from current position onward
+  var remaining = 0;
+  for(var ri = wmIndex; ri < wmQueue.length; ri++){
+    var rl = leads.find(function(x){ return x.id === wmQueue[ri].id; });
+    if(rl && naStatus(rl) !== 'future') remaining++;
+  }
 
-  // Progress bar (based on how many we've moved past)
-  var pct = total > 0 ? Math.round((wmIndex / total) * 100) : 0;
+  // Count how many have been actioned (skipped past or explicitly nexted)
+  var done = 0;
+  for(var di = 0; di < wmIndex; di++){
+    var dl = leads.find(function(x){ return x.id === wmQueue[di].id; });
+    // Count as done whether actioned (future) or explicitly skipped
+    done++;
+  }
+  var effectiveTotal = done + remaining;
+
+  // Progress bar
+  var pct = effectiveTotal > 0 ? Math.round((done / effectiveTotal) * 100) : 0;
   var fillEl = el('wm-fill');
   if(fillEl){
     fillEl.style.width = pct + '%';
-    fillEl.className = 'wm-fill' + (wmIndex >= total ? ' done' : '');
+    fillEl.className = 'wm-fill' + (remaining === 0 ? ' done' : '');
   }
-  var done = wmIndex;
-  var remaining = total - wmIndex;
-  el('wm-ctr').textContent = done + ' / ' + total;
+  el('wm-ctr').textContent = done + ' / ' + effectiveTotal;
 
   // All done?
-  if(wmIndex >= total){
+  if(wmIndex >= wmQueue.length || remaining === 0){
     el('wm-next').style.display = 'none';
     el('wm-body').innerHTML =
       '<div class="wm-done">'
@@ -1474,23 +1484,17 @@ function renderWorkLead(){
   var l = leads.find(function(x){ return x.id === wmQueue[wmIndex].id; }) || wmQueue[wmIndex];
   if(!l){ exitWork(); return; }
 
-  // Set activeId so all overlays (call, note, stage, fu) work correctly
   activeId = l.id;
-
-  // Render the detail view into wm-body
   el('wm-body').innerHTML = buildDetHTML(l) + '<div style="height:16px"></div>';
 
-  // Next button label
   var nextBtn = el('wm-next-btn');
-  var isLast = (wmIndex === total - 1);
   if(nextBtn){
-    nextBtn.innerHTML = isLast
+    nextBtn.innerHTML = remaining === 1
       ? 'Finish <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
-      : 'Next Lead · '+(total - wmIndex - 1)+' left <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
+      : 'Next Lead · '+(remaining - 1)+' more <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>';
   }
   el('wm-next').style.display = 'flex';
 
-  // Scroll back to top
   var body = el('wm-body');
   if(body) body.scrollTo({top:0});
 }
@@ -1726,9 +1730,23 @@ function buildDetHTML(l){
   var e=elig(l),ec=e>=75?'ehi':e>=50?'eme':'elo';
   var elbl=e>=75?'High — Likely Eligible':e>=50?'Medium — Needs Review':'Low — High Risk';
   // Progress bar uses SP (linear journey, excludes 'lost')
-  var stgs=SP; // ['new','contacted','interested','docs_req','docs_recv','submitted','approved','disbursed']
+  var stgs=SP;
   var si=stgs.indexOf(l.stage);
-  var sdots=stgs.map(function(s,i){return'<div class="spd '+(i<si?'dn':s===l.stage?'cr':'')+'"></div>';}).join('');
+  // Build alternating dot + bar stepper
+  var spHtml = '';
+  for(var pi=0;pi<stgs.length;pi++){
+    var dotCls = pi<si?'spd-dot dn':pi===si?'spd-dot cr':'spd-dot';
+    spHtml += '<div class="'+dotCls+'"></div>';
+    if(pi<stgs.length-1){
+      var barCls = pi<si?'spd dn':pi===si?'spd cr':'spd';
+      spHtml += '<div class="'+barCls+'"></div>';
+    }
+  }
+  // Step label: "Step 3 of 8 — Interested" or "Lost" if lost
+  var isLost = l.stage==='lost';
+  var stepLabel = isLost
+    ? '<span class="sp-cur-lbl" style="color:var(--red);">Lost</span><span class="sp-cur-step"></span>'
+    : '<span class="sp-cur-lbl">'+(SL[l.stage]||l.stage)+'</span><span class="sp-cur-step">Step '+(si+1)+' of '+stgs.length+'</span>';
   var docs=l.docs||{};
   var dhtml=DOCS.map(function(d){
     return'<div class="drow" onclick="togDoc(\''+l.id+'\',\''+d.k+'\')">'+
@@ -1786,9 +1804,9 @@ function buildDetHTML(l){
 
     // ── Progress bar ─────────────────────────────────────────────
     '<div style="background:var(--bg2);margin:14px 16px 0;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;">'+
-      '<div style="padding:12px 16px 4px;font-size:12px;font-weight:600;color:var(--l2);text-transform:uppercase;letter-spacing:.5px;">Progress</div>'+
-      '<div class="spr">'+sdots+'</div>'+
-      '<div class="spls"><span>New</span><span>Called</span><span>Interest</span><span>Docs Req</span><span>Docs Recv</span><span>Bank</span><span>Approved</span><span>Disbursed</span></div>'+
+      '<div style="padding:12px 16px 4px;font-size:11px;font-weight:700;color:var(--l2);text-transform:uppercase;letter-spacing:.6px;">Loan Journey</div>'+
+      '<div class="spr">'+spHtml+'</div>'+
+      '<div class="sp-cur">'+stepLabel+'</div>'+
     '</div>'+
 
     '<div class="sec"><div class="sh">Details</div><div class="lst">'+
